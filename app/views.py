@@ -45,7 +45,7 @@ def oauth_authorized():
     user = facebook.get("/me").data
     session['name'] = user['name']
     flash('You were signed in as %s' % session['name'])
-    return redirect(url_for('home'), _external=True)
+    return redirect(url_for('home', _external=True))
 
 
 @app.route('/')
