@@ -22,6 +22,8 @@ facebook = oauth.remote_app('facebook',
 """
 Gets the current facebook user token, if there is one.
 """
+
+
 @facebook.tokengetter
 def get_fb_token(token=None):
     return session.get('facebook_token')
@@ -30,6 +32,8 @@ def get_fb_token(token=None):
 Handles the oauth response object sent back from Facebook
 resp - a dict containing user id and the access token
 """
+
+
 @app.route('/oauth-authorized')
 def oauth_authorized():
     resp = facebook.authorized_response()
@@ -41,8 +45,7 @@ def oauth_authorized():
     user = facebook.get("/me").data
     session['name'] = user['name']
     flash('You were signed in as %s' % session['name'])
-    return redirect(url_for('home'))
-
+    return redirect(url_for('home'), _external=True)
 
 
 @app.route('/')
@@ -56,6 +59,7 @@ def index():
 @app.route('/login')
 def login():
     return facebook.authorize(callback=url_for('oauth_authorized', _external=True))
+
 
 @app.route('/logout')
 def logout():
