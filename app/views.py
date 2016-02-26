@@ -44,8 +44,9 @@ def oauth_authorized():
         flash('Your sign in request was denied.')
         return redirect(next_url)
     session['facebook_token'] = (resp['access_token'], '')
-    user = facebook.get("/me").data
+    user = facebook.get("/me?fields=id,name,email").data
     session['name'] = user['name']
+    session['email'] = user['email']
     flash('You were signed in as %s' % session['name'])
     return redirect(url_for('home', _external=True))
 
@@ -73,7 +74,7 @@ def logout():
 def home():
     msg = Message("Hello",
                   sender="driverTags@gmail.com",
-                  recipients=["pmd6624@rit.edu"])
+                  recipients=[session['email']])
     msg.body = "testing"
     msg.html = "<b>testing</b>"
     msg.body = "testing"
