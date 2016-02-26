@@ -16,7 +16,7 @@ facebook = oauth.remote_app('facebook',
                             authorize_url='https://www.facebook.com/dialog/oauth',
                             consumer_key='966689803422128',
                             consumer_secret='5ebcacfed9b216675ed00ff074d87c4b',
-                            request_token_params={'scope' : 'email'},
+                            request_token_params={'scope': 'email'},
                             )
 
 """
@@ -42,8 +42,9 @@ def oauth_authorized():
         flash('Your sign in request was denied.')
         return redirect(next_url)
     session['facebook_token'] = (resp['access_token'], '')
-    user = facebook.get("/me").data
+    user = facebook.get("/me?fields=id,name,email").data
     session['name'] = user['name']
+    session['email'] = user['email']
     flash('You were signed in as %s' % session['name'])
     return redirect(url_for('home', _external=True))
 
