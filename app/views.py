@@ -3,6 +3,8 @@ __author__ = 'SWEN356 Team 4'
 from app import app
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
+from flask_mail import Message, Mail
+mail=Mail(app)
 
 
 """
@@ -16,7 +18,7 @@ facebook = oauth.remote_app('facebook',
                             authorize_url='https://www.facebook.com/dialog/oauth',
                             consumer_key='966689803422128',
                             consumer_secret='5ebcacfed9b216675ed00ff074d87c4b',
-                            request_token_params={'scope': 'email'},
+                            request_token_params={'scope' : 'email'},
                             )
 
 """
@@ -42,9 +44,8 @@ def oauth_authorized():
         flash('Your sign in request was denied.')
         return redirect(next_url)
     session['facebook_token'] = (resp['access_token'], '')
-    user = facebook.get("/me?fields=id,name,email").data
+    user = facebook.get("/me").data
     session['name'] = user['name']
-    session['email'] = user['email']
     flash('You were signed in as %s' % session['name'])
     return redirect(url_for('home', _external=True))
 
@@ -70,4 +71,13 @@ def logout():
 
 @app.route('/home')
 def home():
+    msg = Message("Hello",
+                  sender="driverTags@gmail.com",
+                  recipients=["pmd6624@rit.edu"])
+    msg.body = "testing"
+    msg.html = "<b>testing</b>"
+    msg.body = "testing"
+    msg.html = "<b>testing</b>"
+    print(msg)
+    mail.send(msg)
     return render_template('home.html')
