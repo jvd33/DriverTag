@@ -2,7 +2,16 @@ language: python
 python:
 - '3.5'
 install: pip install -r requirements.txt
+before_script:
+  - psql -c 'create database travis_ci_test;' -U postgres
 script: nosetests
+
 notifications:
   slack:
     secure: rBwVUHrTxHHKqdnsWUZVIGRLO6KFxyBrn61TEcVFUGJLPaGyF5l8GkKC/IUzI3/ZVNBz4ggXTyut2BWfhcv0koWuYl95MG0af4VXxCjKdRMsmxQZUSDDQ6S8pMH4eb6tOUmBKTty/urncXVzpyEA2WbH25wWlAjsQbb0B7SPhwD2pYh+Avk60hHGv0/bk2RsR9VnbXxQaV7MPrSQ3yXNfCzVRzsJAMkKY25OIdFuNoil6oKLMWS62sEfYEdJtdFIiUKrqRrx0kyH0FCyyMEozwSOZgjHGDQFcT34k2bQYoxTwINJoxto4VJ+NPh1ISE0tZhAzwN3ICRgA57ZKushJTJyIbgJIcM6ms8mZjpCA9jkUAtuM0da4pAm4QTdj0bIPNMbE45GyfX0Zs/ZDPgFSK9yZjw9SUTAadNS/0XIImcRMmQkw2ZWCoNL3LtDY+iFsfh4VvHvpNebE7psaOAx3K2HzA1LDFUbZRWzJlorJU0vLDo6BzZeaxeuyk5px6iva/3Xp6n1mD+TneLSPK5thsmlngTch4Khh36p0ED23wL1gd94cvlWGuoWHLlwh0mcBtfKbp/hrOiZGBAJzoxpyyHD5J4AF1uMoYsdMAnLiSs0Fa6LtE2RidONYcXcOYq4T9zlx2tWPWtv9LYUdY9XjUI71G4V5zCAZRvwRuy5U7M=
+
+addons:
+  postgresql: "9.4"
+
+services:
+-postgresql
