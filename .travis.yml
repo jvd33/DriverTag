@@ -4,7 +4,7 @@ python:
 install: pip install -r requirements.txt
 
 before_script:
-- psql -c 'create database travis_ci_test;' -U postgres
+- psql -c 'create database drivertag;' -U postgres
 
 script: nosetests
 
