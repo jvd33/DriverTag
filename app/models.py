@@ -16,7 +16,7 @@ class Data(db.Model):
      user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
      user = db.relation('User', backref=db.backref('data',lazy='dynamic'))
 
-     def __int__(self, xgyro,ygyro,zgyro,xaccel,yaccel,zaccel,latitude,longitude):
+     def __init__(self, xgyro,ygyro,zgyro,xaccel,yaccel,zaccel,latitude,longitude):
          self.x_gyroscope = xgyro
          self.y_gyroscope = ygyro
          self.z_gyroscope = zgyro
@@ -28,3 +28,9 @@ class Data(db.Model):
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True)
+    name = db.Column(db.String(255))
+
+    def __init__(self, email, name):
+        self.email = email
+        self.name = name
