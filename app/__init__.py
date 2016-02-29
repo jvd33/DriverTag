@@ -42,7 +42,7 @@ class User(db.Model):
     name = db.Column(db.String(255))
 
     def __init__(self, email, name):
-        self.id = email
+        self.email = email
         self.name = name
 
 

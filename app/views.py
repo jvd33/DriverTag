@@ -40,11 +40,13 @@ def oauth_authorized():
         flash('Your sign in request was denied.')
         return redirect(next_url)
     session['facebook_token'] = (resp['access_token'], '')
-    user = facebook.get("/me").data
+    user = facebook.get("/me?fields=id,name,email").data
+    session['id'] = user['id']
     session['name'] = user['name']
-    u = app.User(session['name'], session['email'])
-    app.db.add(u)
-    app.db.commit()
+    session['email'] = user['email']
+    u = User(session['name'], session['email'])
+    db.session.add(u)
+    db.session.commit()
     flash('You were signed in as %s' % session['name'])
     return redirect(url_for('home'))
 
