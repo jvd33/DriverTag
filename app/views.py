@@ -1,6 +1,7 @@
 __author__ = 'SWEN356 Team 4'
 
 from app import *
+from app import models
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
 
@@ -44,7 +45,7 @@ def oauth_authorized():
     session['id'] = user['id']
     session['name'] = user['name']
     session['email'] = user['email']
-    u = User(session['name'], session['email'])
+    u = models.User(session['name'], session['email'])
     db.session.add(u)
     db.session.commit()
     flash('You were signed in as %s' % session['name'])
