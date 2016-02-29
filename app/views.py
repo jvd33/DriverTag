@@ -1,8 +1,11 @@
 __author__ = 'SWEN356 Team 4'
 
-from app import app
+from app import *
+from app import models
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
+
+
 
 
 """
@@ -43,8 +46,12 @@ def oauth_authorized():
         return redirect(next_url)
     session['facebook_token'] = (resp['access_token'], '')
     user = facebook.get("/me?fields=id,name,email").data
+    session['id'] = user['id']
     session['name'] = user['name']
     session['email'] = user['email']
+    u = models.User(session['email'], session['name'])
+    db.session.add(u)
+    db.session.commit()
     flash('You were signed in as %s' % session['name'])
     return redirect(url_for('home', _external=True))
 
