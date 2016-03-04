@@ -4,6 +4,8 @@ from app import *
 from app import models
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
+from flask_login import login_user, login_required, logout_user
+
 
 
 
@@ -21,6 +23,16 @@ facebook = oauth.remote_app('facebook',
                             consumer_secret='5ebcacfed9b216675ed00ff074d87c4b',
                             request_token_params={'scope': 'email'},
                             )
+
+"""
+User loader function
+"""
+
+
+@login_manager.user_loader
+def load_user(user_id):
+    print(user_id + "\n\n")
+    return db.session.query(models.User).get(user_id)
 
 """
 Gets the current facebook user token, if there is one.
@@ -46,21 +58,26 @@ def oauth_authorized():
         return redirect(next_url)
     session['facebook_token'] = (resp['access_token'], '')
     user = facebook.get("/me?fields=id,name,email").data
-    session['id'] = user['id']
     session['name'] = user['name']
     session['email'] = user['email']
-    u = models.User(session['email'], session['name'])
-    db.session.add(u)
-    db.session.commit()
+    if db.session.query(models.User).filter_by(email=user['email']).one_or_none() is None: #if the user is new
+        u = models.User(session['email'], session['name'])
+        db.session.add(u)
+        db.session.commit()
+        flash('You were signed in as %s' % session['name'])
+        login_user(u)
+        return redirect(url_for('config.html'))
+
+    u = db.session.query(models.User).filter_by(email=user['email']).one_or_none()
+    print(u)
     flash('You were signed in as %s' % session['name'])
+    login_user(u)
     return redirect(url_for('home', _external=True))
 
 
 @app.route('/')
 @app.route('/index')
 def index():
-    if session:
-        return redirect(url_for('home'))
     return render_template('index.html')
 
 
@@ -72,9 +89,16 @@ def login():
 @app.route('/logout')
 def logout():
     session.clear()
+    logout_user()
     return redirect(url_for('index'))
 
 
 @app.route('/home')
+@login_required
 def home():
     return render_template('home.html')
+
+@app.route('/config')
+@login_required
+def user_config():
+    pass
