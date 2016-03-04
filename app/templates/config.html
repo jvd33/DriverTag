@@ -6,6 +6,17 @@
     <h1>
         User Configuration
     </h1>
+    Enter risky driving times here
+    {% from "_formhelpers.html" import render_field %}
+    <form method="POST" action="/config">
+        <dl>
+            {{ render_field(form.start_time) }}
+            {{ render_field(form.end_time) }}
+        </dl>
+
+        <p><input type=submit></p>
+    </form>
+    <a href="/home">Back</a>
 
 </head>
 <body>

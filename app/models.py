@@ -42,11 +42,12 @@ class User(db.Model, UserMixin):
 
 class HighRiskTime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
-    high_risk = db.relationship('User', backref=db.backref('highrisktime', lazy='dynamic'))
+    start_time = db.Column(db.INTEGER)
+    end_time = db.Column(db.INTEGER)
+    user = db.relationship('User', backref=db.backref('highrisktime', lazy='dynamic'))
     user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
 
-    def __init__(self, start_time, end_time):
+    def __init__(self, start_time, end_time, user_id):
         self.start_time = start_time
         self.end_time = end_time
+        self.user_id = user_id

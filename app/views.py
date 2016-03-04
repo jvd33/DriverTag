@@ -1,10 +1,10 @@
 __author__ = 'SWEN356 Team 4'
 
 from app import *
-from app import models
+from app.forms import HighRiskTimeForm
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
-from flask_login import login_user, login_required, logout_user
+from flask_login import login_user, login_required, logout_user, current_user
 
 
 
@@ -31,7 +31,6 @@ User loader function
 
 @login_manager.user_loader
 def load_user(user_id):
-    print(user_id + "\n\n")
     return db.session.query(models.User).get(user_id)
 
 """
@@ -56,20 +55,21 @@ def oauth_authorized():
     if resp is None:
         flash('Your sign in request was denied.')
         return redirect(next_url)
+
     session['facebook_token'] = (resp['access_token'], '')
     user = facebook.get("/me?fields=id,name,email").data
     session['name'] = user['name']
     session['email'] = user['email']
+
     if db.session.query(models.User).filter_by(email=user['email']).one_or_none() is None: #if the user is new
         u = models.User(session['email'], session['name'])
         db.session.add(u)
         db.session.commit()
         flash('You were signed in as %s' % session['name'])
         login_user(u)
-        return redirect(url_for('config.html'))
+        return redirect(url_for('home'))
 
     u = db.session.query(models.User).filter_by(email=user['email']).one_or_none()
-    print(u)
     flash('You were signed in as %s' % session['name'])
     login_user(u)
     return redirect(url_for('home', _external=True))
@@ -90,6 +90,7 @@ def login():
 def logout():
     session.clear()
     logout_user()
+    flash('You were successfully logged out.')
     return redirect(url_for('index'))
 
 
@@ -98,7 +99,16 @@ def logout():
 def home():
     return render_template('home.html')
 
-@app.route('/config')
+
+@app.route('/config', methods=['GET', 'POST'])
 @login_required
 def user_config():
-    pass
+    form = HighRiskTimeForm()
+    if request.method == 'POST' and form.validate():
+        hrt = models.HighRiskTime(form.start_time, form.end_time, current_user)
+        db.session.add(hrt)
+        db.session.commit()
+        flash('Time interval added. Be safe out there!')
+        return redirect(url_for('config'))
+
+    return render_template('config.html', form=form)
