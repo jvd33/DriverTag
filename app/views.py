@@ -5,6 +5,7 @@ from app.forms import HighRiskTimeForm
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
 from flask_login import login_user, login_required, logout_user, current_user
+from datetime import datetime
 
 
 
@@ -32,6 +33,15 @@ User loader function
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.query(models.User).get(user_id)
+
+"""
+Redirects to index if user is not logged in
+"""
+
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for('index'))
 
 """
 Gets the current facebook user token, if there is one.
@@ -78,6 +88,8 @@ def oauth_authorized():
 @app.route('/')
 @app.route('/index')
 def index():
+    if current_user.is_active:
+        return redirect(url_for('home'))
     return render_template('index.html')
 
 
@@ -87,6 +99,7 @@ def login():
 
 
 @app.route('/logout')
+@login_required
 def logout():
     session.clear()
     logout_user()
@@ -103,12 +116,27 @@ def home():
 @app.route('/config', methods=['GET', 'POST'])
 @login_required
 def user_config():
-    form = HighRiskTimeForm()
-    if request.method == 'POST' and form.validate():
-        hrt = models.HighRiskTime(form.start_time, form.end_time, current_user)
-        db.session.add(hrt)
-        db.session.commit()
-        flash('Time interval added. Be safe out there!')
-        return redirect(url_for('config'))
+    form = HighRiskTimeForm(request.form)
+    # gets all the user's unique high risk times for display
+    times = db.session.query(models.HighRiskTime).filter_by(user=current_user)\
+        .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
-    return render_template('config.html', form=form)
+    if request.method == 'POST' and form.validate():
+
+        start = datetime.strptime(form.start_time.data, "%H:%M")
+        end = datetime.strptime(form.end_time.data, "%H:%M")
+        time = db.session.query(models.HighRiskTime).filter_by(user=current_user).all()
+        hrt = models.HighRiskTime(start.time(), end.time(), current_user.id)
+
+        # if this time interval isnt unique, add it to the db
+        if (hrt.start_time, hrt.end_time) not in {t.start_time: t.end_time for t in time}.items():
+            db.session.add(hrt)
+            db.session.commit()
+            flash('Time interval added. Be safe out there!')
+        else:
+            flash('Time interval already added.')
+        return render_template('config.html', form=form, times=times)
+
+    return render_template('config.html', form=form, times=times)
+
+

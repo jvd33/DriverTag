@@ -8,14 +8,12 @@
     <div>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-            <ul class=flashes>
             {% for message in messages %}
                 {{ message }}
             {% endfor %}
-            </ul>
         {% endif %}
     {% endwith %}
-        <a href="/login">Login with Facebook</a>
+        <p><a href="/login">Login with Facebook</a></p>
     </div>
 </body>
 </html>

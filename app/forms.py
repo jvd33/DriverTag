@@ -1,6 +1,6 @@
 __author__ = "SWEN356 Team 4"
 
-from wtforms import Form, DateTimeField, validators
+from wtforms import Form, StringField, validators
 import re
 
 
@@ -11,9 +11,9 @@ def validate_time(form, field):
 
 
 class HighRiskTimeForm(Form):
-    start_time = DateTimeField('Risk starts at:',
-                               [validate_time], format='%H:%M')
-    end_time = DateTimeField('Risk ends at:',
-                             [validate_time], format='%H:%M')
+    start_time = StringField(u'Risk starts at:',
+                               [validate_time])
+    end_time = StringField(u'Risk ends at:',
+                             [validate_time])
 
 

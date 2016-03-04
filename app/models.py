@@ -39,11 +39,10 @@ class User(db.Model, UserMixin):
         self.name = name
 
 
-
 class HighRiskTime(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    start_time = db.Column(db.INTEGER)
-    end_time = db.Column(db.INTEGER)
+    start_time = db.Column(db.TIMESTAMP)
+    end_time = db.Column(db.TIMESTAMP)
     user = db.relationship('User', backref=db.backref('highrisktime', lazy='dynamic'))
     user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
 

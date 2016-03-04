@@ -6,7 +6,16 @@
     <h1>
         User Configuration
     </h1>
-    Enter risky driving times here
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    <p>Enter new risky driving times here</p>
     {% from "_formhelpers.html" import render_field %}
     <form method="POST" action="/config">
         <dl>
@@ -14,9 +23,18 @@
             {{ render_field(form.end_time) }}
         </dl>
 
-        <p><input type=submit></p>
+        <p><input type=submit value="Submit"></p>
     </form>
     <a href="/home">Back</a>
+        <p>Your High Risk Times:</p>
+
+        {% if times %}
+            {% for time in times %}
+                    <p>High Risk Time Starts: {{ time.start_time }}</p>
+                    <p>High Risk Time Ends: {{ time.end_time }}</p>
+                <br></br>
+            {% endfor %}
+        {% endif %}
 
 </head>
 <body>
