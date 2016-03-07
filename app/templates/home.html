@@ -4,8 +4,19 @@
     <meta charset="UTF-8">
     <title>DriverTag</title>
     <h1>DriverTag</h1>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                {{ message }}
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
     <h3>Hello {{ session.name }}</h3>
+
     <a href="/logout">Logout</a>
+    <a href="/config">Configuration</a>
 </head>
 <body>
 

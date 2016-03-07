@@ -6,8 +6,8 @@ from flask import Flask
 from flask_mail import Mail
 from flask_sqlalchemy import SQLAlchemy
 from celery import Celery
-
 celery = Celery('myapp', broker='amqp://guest@localhost//')
+from flask_login import LoginManager
 
 app = Flask(__name__)
 mail = Mail(app)
@@ -28,6 +28,8 @@ app.config['CELERY_RESULT_BACKEND'] = 'redis://localhost'
 app.secret_key = '\xa5\x8f\x19\xbb`$\xacw\x91\xe1\xd2\x896R\xf9\x14\x01\xe1\xd5U\xcc\xa9\x13'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgresl@localhost/drivertag'
 db = SQLAlchemy(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 from app import models
 
