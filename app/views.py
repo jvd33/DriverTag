@@ -5,6 +5,7 @@ from app import models
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
 from flask_mail import Message, Mail
+from celery import Celery
 mail=Mail(app)
 
 
@@ -79,15 +80,18 @@ def logout():
 
 @app.route('/home')
 def home():
-    # if [session['email']]:
-    #     print('made it')
-    #     msg = Message("Hello",
-    #                   sender="driverTags@gmail.com",
-    #                   recipients=[session['email']])
-    #     msg.body = "testing"
-    #     msg.html = "<b>testing</b>"
-    #     msg.body = "testing"
-    #     msg.html = "<b>testing</b>"
-    #     print(msg)
-    #     mail.send(msg)
+    print(session['email'])
     return render_template('home.html')
+
+@celery.task()
+def send_email(email):
+    print('made it')
+    msg = Message("Hello",
+                  sender="driverTags@gmail.com",
+                  recipients=[session['email']])
+    msg.body = "testing"
+    msg.html = "<b>testing</b>"
+    msg.body = "testing"
+    msg.html = "<b>testing</b>"
+    print(msg)
+    mail.send(msg)
