@@ -72,13 +72,15 @@ def logout():
 
 @app.route('/home')
 def home():
-    msg = Message("Hello",
-                  sender="driverTags@gmail.com",
-                  recipients=[session['email']])
-    msg.body = "testing"
-    msg.html = "<b>testing</b>"
-    msg.body = "testing"
-    msg.html = "<b>testing</b>"
-    print(msg)
-    mail.send(msg)
+    # if [session['email']]:
+    #     print('made it')
+    #     msg = Message("Hello",
+    #                   sender="driverTags@gmail.com",
+    #                   recipients=[session['email']])
+    #     msg.body = "testing"
+    #     msg.html = "<b>testing</b>"
+    #     msg.body = "testing"
+    #     msg.html = "<b>testing</b>"
+    #     print(msg)
+    #     mail.send(msg)
     return render_template('home.html')
