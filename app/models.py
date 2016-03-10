@@ -16,23 +16,19 @@ class Data(db.Model):
 
      ''' Foreign Key for a User '''
      user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
-     user = db.relation('User', backref=db.backref('data',lazy='dynamic'))
+     '''user = db.relation('User', backref=db.backref('data',lazy='dynamic'))'''
 
-     def __init__(self, xgyro,ygyro,zgyro,xaccel,yaccel,zaccel,latitude,longitude):
-         self.x_gyroscope = xgyro
-         self.y_gyroscope = ygyro
-         self.z_gyroscope = zgyro
+     def __init__(self, xaccel,yaccel,zaccel,user):
          self.x_accelorometer = xaccel
          self.y_accelorometer = yaccel
          self.z_accelorometer = zaccel
-         self.latitude = latitude
-         self.longitude = longitude
-
+         self.user_id = user.id
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
     name = db.Column(db.String(255))
+    data = db.relationship('Data', backref='user',lazy='dynamic')
 
     def __init__(self, email, name):
         self.email = email
