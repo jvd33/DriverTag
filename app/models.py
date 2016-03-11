@@ -1,6 +1,6 @@
 from app import db
 from flask_login import UserMixin
-from datetime import time
+from datetime import datetime
 
 class Data(db.Model):
      id = db.Column(db.Integer, primary_key=True)
@@ -24,6 +24,7 @@ class Data(db.Model):
          self.z_accelorometer = zaccel
          self.timestamp = time
          self.user_id = user.id
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -57,9 +58,8 @@ class Acceleration(db.Model):
     seconds = db.Column(db.DECIMAL)
     g = db.Column(db.DECIMAL)
 
-
     def __init__(self, mph, s, user_id):
         self.mph = mph
         self.seconds = s
         self.user_id = user_id
-        self.g = float((mph/s)) * .045585 #mph/s
+        self.g = float((mph/s)) * .045585  # in gs!
