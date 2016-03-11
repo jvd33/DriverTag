@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.models import *
+from decimal import Decimal
 import random
 
 app = Flask(__name__)
@@ -9,6 +10,7 @@ db = SQLAlchemy(app)
 
 ''' Clean out data '''
 db.engine.execute('delete from data')
+db.engine.execute('delete from \"user\"')
 
 
 '''Create fake users'''
@@ -22,8 +24,78 @@ user7 = User('7@test.com', 'Brandon Smith')
 user8 = User('8@test.com', 'Paul Smith')
 user9 = User('9@test.com', 'Brady Smith')
 userArray = [user1, user2, user3, user4, user5, user6, user7, user8, user9]
+
 db.session.add_all(userArray)
 db.session.commit()
+
+
+
+'''
+    This function shall find a new datapoint that satisfies the following requirements
+
+    1) generates a change in x Delta
+    2) Randomly either decreases or increases the data point
+
+'''
+def generateNormalDataPoint(previousX,previousY,previousZ, currentUser):
+
+    '''Generate random acceleration changes for x,y,z '''
+    xDelta = previousX + Decimal(random.uniform(-.12,.12))
+    yDelta = previousY + Decimal(random.uniform(-.05,.05))
+    zDelta = previousZ + Decimal(random.uniform(-.09,.09))
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    return dataPoint
+
+'''
+    This Function generates a datapoint for the start of a Accel event
+'''
+
+def startAccelEvent(currentUser,swerve):
+
+
+    ''' Generate Either Negative (braking) or Positive X datapoint '''
+    if(random.randint(0,1) == 0):
+        xDelta = 0 - Decimal(random.uniform(.90,1.65))
+    else:
+        xDelta = random.uniform(.90,1.65)
+
+    ''' Generate Either Negative (braking) or Positive Z datapoint '''
+    if(random.randint(0,1) == 0) & (swerve == True):
+         zDelta = 0 - Decimal(random.uniform(.25,.70))
+    elif swerve == True:
+        zDelta = random.uniform(.25,.70)
+    else:
+        zDelta = random.uniform(-.13,.13)
+
+
+    yDelta =  random.uniform(-.05,.05)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+
+    return dataPoint
+
+def continueAccelEvent(previousX,previousY,previousZ, currentUser):
+
+    '''Generate random acceleration changes for x,y,z '''
+    xDelta = previousX + random.uniform(-.12,.12)
+    yDelta = previousY + random.uniform(-.05,.05)
+    zDelta = previousZ + random.uniform(-.09,.09)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+
+    return dataPoint
+
+''' Generate a datapoint for the end of an acceleration '''
+def endAccelEvent(currentUser):
+
+    '''Generate random acceleration changes for x,y,z '''
+    xDelta = random.uniform(-.10,.10)
+    yDelta = random.uniform(-.05,.05)
+    zDelta = random.uniform(-.09,.09)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    return dataPoint
 
 
 '''Constants for sensor data '''
@@ -60,7 +132,7 @@ for currentUser in userArray:
     db.session.add(dataPoint)
     db.session.commit()
 
-    timeLeftBraking = 0
+    timeLeftAccel = 0
     critical = False
     swerve = False
 
@@ -74,15 +146,16 @@ for currentUser in userArray:
         chanceToLive = round(random.random(),4)
 
         ''' Continued Accel Event '''
-        if critical==True:
+        if (critical==True):
             ''' Reduce the time left for the Acceleration '''
-            timeLeftBraking = timeLeftBraking -1
+            timeLeftAccel = timeLeftAccel -1
             ''' Generate DataPoint '''
             dataPoint = continueAccelEvent(dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
-        ''' Start Accel Event '''
-        elif chanceToLive < .013:
 
-            ''' Accel Event Flag '''
+        # Start Accel Event
+        elif (chanceToLive < .013) :
+
+            #Accel Event Flag
             critical = True
 
             ''' The car swerved (Implication on Z acceleration)'''
@@ -90,94 +163,33 @@ for currentUser in userArray:
                 swerve = True
 
             ''' The length of the acceleration 1-4 seconds'''
-            timeLeftBraking = random.randint(1,4)
+            timeLeftAccel = random.randint(1,4)
 
             ''' Generate DataPoint '''
             dataPoint =startAccelEvent(currentUser,swerve)
 
-        ''' Normal Driving '''
+
+        # End of Accel Event
+        elif timeLeftAccel < 0 :
+            timeLeftAccel = 0
+            critical = False
+            swerve = False
+            dataPoint = endAccelEvent(currentUser)
+
+        # Normal Driving
         else:
             dataPoint = generateNormalDataPoint(dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
 
 
-        ''' End of Accel Event '''
-        if timeLeftBraking < 0 :
-            timeLeftBraking = 0
-            critical = False
-            swerve = False
-            endAccelEvent(currentUser)
+
 
         ''' We may add the array instead of each individual dataPoint '''
         dataList.append(dataPoint)
 
+    ''' Bulk Insert '''
+    db.session.add_all(dataList)
+    db.session.commit()
 
+        #db.session.add(dataPoint)
+        #db.session.commit()
 
-        db.session.add(dataPoint)
-        db.session.commit()
-
-'''
-    This function shall find a new datapoint that satisfies the following requirements
-
-    1) generates a change in x Delta
-    2) Randomly either decreases or increases the data point
-
-'''
-def generateNormalDataPoint(previousX,previousY,previousZ, currentUser):
-
-    '''Generate random acceleration changes for x,y,z '''
-    xDelta = previousX + random.uniform(-.12,.12)
-    yDelta = previousY + random.uniform(-.05,.05)
-    zDelta = previousZ + random.uniform(-.09,.09)
-
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
-    return dataPoint
-
-'''
-    This Function generates a datapoint for the start of a Accel event
-'''
-
-def startAccelEvent(currentUser,swerve):
-
-
-    ''' Generate Either Negative (braking) or Positive X datapoint '''
-    if(random.randint(0,1) == 0):
-        xDelta = 0 - random.uniform(.90,1.65)
-    else:
-        xDelta = random.uniform(.90,1.65)
-
-    ''' Generate Either Negative (braking) or Positive Z datapoint '''
-    if((random.randint(0,1) == 0) && (swerve == True)):
-         zDelta = 0 - random.uniform(.25,.70)
-    elif swerve == True:
-        zDelta = random.uniform(.25,.70)
-    else:
-        zDelta = random.uniform(-.13,.13)
-
-
-    yDelta =  random.uniform(-.05,.05)
-
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
-
-    return dataPoint
-
-def continueAccelEvent(previousX,previousY,previousZ, currentUser):
-
-  '''Generate random acceleration changes for x,y,z '''
-    xDelta = previousX + random.uniform(-.12,.12)
-    yDelta = previousY + random.uniform(-.05,.05)
-    zDelta = previousZ + random.uniform(-.09,.09)
-
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
-
-    return dataPoint
-
-''' Generate a datapoint for the end of an acceleration '''
-def endAccelEvent(currentUser):
-
-    '''Generate random acceleration changes for x,y,z '''
-    xDelta = random.uniform(-.10,.10)
-    yDelta = random.uniform(-.05,.05)
-    zDelta = random.uniform(-.09,.09)
-
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
-    return dataPoint
