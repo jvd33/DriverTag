@@ -78,9 +78,9 @@ def startAccelEvent(currentUser,swerve):
 def continueAccelEvent(previousX,previousY,previousZ, currentUser):
 
     '''Generate random acceleration changes for x,y,z '''
-    xDelta = previousX + random.uniform(-.12,.12)
-    yDelta = previousY + random.uniform(-.05,.05)
-    zDelta = previousZ + random.uniform(-.09,.09)
+    xDelta = Decimal(previousX) + Decimal(random.uniform(-.12,.12))
+    yDelta = Decimal(previousY) + Decimal(random.uniform(-.05,.05))
+    zDelta = Decimal(previousZ) + Decimal(random.uniform(-.09,.09))
 
     dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
 
@@ -190,6 +190,4 @@ for currentUser in userArray:
     db.session.add_all(dataList)
     db.session.commit()
 
-        #db.session.add(dataPoint)
-        #db.session.commit()
 
