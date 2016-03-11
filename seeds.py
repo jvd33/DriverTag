@@ -2,6 +2,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from app.models import *
 from decimal import Decimal
+from datetime import *
 import random
 
 app = Flask(__name__)
@@ -29,7 +30,6 @@ db.session.add_all(userArray)
 db.session.commit()
 
 
-
 '''
     This function shall find a new datapoint that satisfies the following requirements
 
@@ -37,21 +37,21 @@ db.session.commit()
     2) Randomly either decreases or increases the data point
 
 '''
-def generateNormalDataPoint( currentUser):
+def generateNormalDataPoint(time, currentUser):
 
     '''Generate random acceleration changes for x,y,z '''
     xDelta = Decimal(random.uniform(-.22,.22))
     yDelta = Decimal(random.uniform(-.07,.07))
     zDelta = Decimal(random.uniform(-.11,.11))
 
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    dataPoint = Data( xDelta, yDelta, zDelta, time, currentUser)
     return dataPoint
 
 '''
     This Function generates a datapoint for the start of a Accel event
 '''
 
-def startAccelEvent(currentUser,swerve):
+def startAccelEvent(time, currentUser,swerve):
 
 
     ''' Generate Either Negative (braking) or Positive X datapoint '''
@@ -71,30 +71,30 @@ def startAccelEvent(currentUser,swerve):
 
     yDelta =  random.uniform(-.05,.05)
 
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    dataPoint = Data( xDelta, yDelta, zDelta, time, currentUser)
 
     return dataPoint
 
-def continueAccelEvent(previousX,previousY,previousZ, currentUser):
+def continueAccelEvent(time, previousX,previousY,previousZ, currentUser):
 
     '''Generate random acceleration changes for x,y,z '''
     xDelta = Decimal(previousX) + Decimal(random.uniform(-.12,.12))
     yDelta = Decimal(previousY) + Decimal(random.uniform(-.05,.05))
     zDelta = Decimal(previousZ) + Decimal(random.uniform(-.09,.09))
 
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    dataPoint = Data( xDelta, yDelta, zDelta, time,  currentUser)
 
     return dataPoint
 
 ''' Generate a datapoint for the end of an acceleration '''
-def endAccelEvent(currentUser):
+def endAccelEvent(time, currentUser):
 
     '''Generate random acceleration changes for x,y,z '''
     xDelta = random.uniform(-.10,.10)
     yDelta = random.uniform(-.05,.05)
     zDelta = random.uniform(-.09,.09)
 
-    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    dataPoint = Data( xDelta, yDelta, zDelta, time, currentUser)
     return dataPoint
 
 
@@ -128,7 +128,11 @@ for currentUser in userArray:
         because the user is about to start their trip
     '''
 
-    dataPoint = Data(0, 0, 0, currentUser)
+    #just get the current time which we will increment from for the driver
+    timeStamp = datetime.now()
+
+
+    dataPoint = Data(0, 0, 0, timeStamp, currentUser)
     db.session.add(dataPoint)
     db.session.commit()
 
@@ -136,11 +140,16 @@ for currentUser in userArray:
     critical = False
     swerve = False
 
+
+
     dataList = []
 
     ''' Generate each timeStep '''
     for num in range(numSteps-1):
         ''' Generate new data points for a user '''
+
+        #add time interval to the timestamp
+        timeStamp = timeStamp + timedelta(0,SensorInterval)
 
 
         chanceToLive = round(random.random(),4)
@@ -150,7 +159,7 @@ for currentUser in userArray:
             ''' Reduce the time left for the Acceleration '''
             timeLeftAccel = timeLeftAccel -1
             ''' Generate DataPoint '''
-            dataPoint = continueAccelEvent(dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
+            dataPoint = continueAccelEvent(timeStamp, dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
 
         # Start Accel Event
         elif (chanceToLive < .013) :
@@ -166,7 +175,7 @@ for currentUser in userArray:
             timeLeftAccel = random.randint(1,4)
 
             ''' Generate DataPoint '''
-            dataPoint = startAccelEvent(currentUser,swerve)
+            dataPoint = startAccelEvent(timeStamp, currentUser,swerve)
 
 
         # End of Accel Event
@@ -174,11 +183,11 @@ for currentUser in userArray:
             timeLeftAccel = 0
             critical = False
             swerve = False
-            dataPoint = endAccelEvent(currentUser)
+            dataPoint = endAccelEvent(timeStamp, currentUser)
 
         # Normal Driving
         else:
-            dataPoint = generateNormalDataPoint(currentUser)
+            dataPoint = generateNormalDataPoint(timeStamp, currentUser)
 
 
 
