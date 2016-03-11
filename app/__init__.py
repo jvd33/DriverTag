@@ -16,3 +16,4 @@ from app import models
 db.create_all()
 
 from app import views
+
