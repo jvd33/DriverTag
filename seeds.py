@@ -37,12 +37,12 @@ db.session.commit()
     2) Randomly either decreases or increases the data point
 
 '''
-def generateNormalDataPoint(previousX,previousY,previousZ, currentUser):
+def generateNormalDataPoint( currentUser):
 
     '''Generate random acceleration changes for x,y,z '''
-    xDelta = previousX + Decimal(random.uniform(-.12,.12))
-    yDelta = previousY + Decimal(random.uniform(-.05,.05))
-    zDelta = previousZ + Decimal(random.uniform(-.09,.09))
+    xDelta = Decimal(random.uniform(-.22,.22))
+    yDelta = Decimal(random.uniform(-.07,.07))
+    zDelta = Decimal(random.uniform(-.11,.11))
 
     dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
     return dataPoint
@@ -166,7 +166,7 @@ for currentUser in userArray:
             timeLeftAccel = random.randint(1,4)
 
             ''' Generate DataPoint '''
-            dataPoint =startAccelEvent(currentUser,swerve)
+            dataPoint = startAccelEvent(currentUser,swerve)
 
 
         # End of Accel Event
@@ -178,7 +178,7 @@ for currentUser in userArray:
 
         # Normal Driving
         else:
-            dataPoint = generateNormalDataPoint(dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
+            dataPoint = generateNormalDataPoint(currentUser)
 
 
 
