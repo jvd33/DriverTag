@@ -155,9 +155,9 @@ for currentUser in userArray:
         chanceToLive = round(random.random(),4)
 
         ''' Continued Accel Event '''
-        if (critical==True):
+        if critical is(True) and timeLeftAccel > 0:
             ''' Reduce the time left for the Acceleration '''
-            timeLeftAccel = timeLeftAccel -1
+            timeLeftAccel-=1
             ''' Generate DataPoint '''
             dataPoint = continueAccelEvent(timeStamp, dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
 
@@ -176,7 +176,6 @@ for currentUser in userArray:
 
             ''' Generate DataPoint '''
             dataPoint = startAccelEvent(timeStamp, currentUser,swerve)
-
 
         # End of Accel Event
         elif timeLeftAccel < 0 :
