@@ -17,10 +17,19 @@
 
     <p>Enter new risky driving times here</p>
     {% from "_formhelpers.html" import render_field %}
-    <form method="POST" action="/config">
+    <form method="POST" action="{{ url_for('hrt') }}">
         <dl>
-            {{ render_field(form.start_time) }}
-            {{ render_field(form.end_time) }}
+            {{ render_field(form1.start_time) }}
+            {{ render_field(form1.end_time) }}
+        </dl>
+
+        <p><input type=submit value="Submit"></p>
+    </form>
+
+    <form method="POST" action="{{ url_for('accel') }}">
+        <dl>
+            {{ render_field(form2.delta_mph) }}
+            {{ render_field(form2.seconds) }}
         </dl>
 
         <p><input type=submit value="Submit"></p>
