@@ -1,11 +1,17 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from app.models import *
+import random
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgresl@localhost/drivertag'
 db = SQLAlchemy(app)
 
-from app.models import User
+''' Clean out data '''
+db.engine.execute('delete from data')
+
+
+'''Create fake users'''
 user1 = User('1@test.com', 'Tim Smith')
 user2 = User('2@test.com', 'Matt Smith')
 user3 = User('3@test.com', 'Bob Smith')
@@ -20,45 +26,158 @@ db.session.add_all(userArray)
 db.session.commit()
 
 
-from app.models import Data
+'''Constants for sensor data '''
 
-'''Constans for sensor data '''
+'''Polling Rate in seconds'''
+SensorInterval = 1
 
-'''Polling Rater in ms'''
-SensorInterval = 100
-
-'''number of hours to simulate data for users '''
-hours = 5
-
-''' Number of time steps to simulate '''
-numSteps = (hours *60 *60 *1000)/SensorInterval
 
 ''' For each user generate data'''
 for currentUser in userArray:
-    '''create random variance per user '''
-    ''' variance = random variance '''
 
+    print('Seeding data for user is', currentUser.name)
+    random.seed(currentUser.name)
+
+    '''create random maxVariance per user '''
+    ''' maxVariance = random variance '''
+
+    '''2-8 hours of simulated data for a given user '''
+    hours = random.uniform(2,8)
+
+    ''' Number of time steps to simulate '''
+    numSteps = round((hours *60 *60)/SensorInterval)
+
+    print("Number of steps: ", numSteps)
+
+    '''
+        Need to generate the first Data point for the user
+
+        example: The application has started recording data
+        because the user is about to start their trip
+    '''
+
+    dataPoint = Data(0, 0, 0, currentUser)
+    db.session.add(dataPoint)
+    db.session.commit()
+
+    timeLeftBraking = 0
+    critical = False
+    swerve = False
+
+    dataList = []
 
     ''' Generate each timeStep '''
-    for num in range(numSteps):
+    for num in range(numSteps-1):
         ''' Generate new data points for a user '''
 
-        '''
-        These numbers need to be random but realistic
-        1) needs to be continuous
-        2) needs to be a normal distribution
 
-        code that may be useful
-        round(random.uniform(-3,3),4)
+        chanceToLive = round(random.random(),4)
 
-        x = random number
-        y = random number
-        z = random number
+        ''' Continued Accel Event '''
+        if critical==True:
+            ''' Reduce the time left for the Acceleration '''
+            timeLeftBraking = timeLeftBraking -1
+            ''' Generate DataPoint '''
+            dataPoint = continueAccelEvent(dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
+        ''' Start Accel Event '''
+        elif chanceToLive < .013:
 
-        dataPoint = Data(x, y, z, currentUser)
+            ''' Accel Event Flag '''
+            critical = True
+
+            ''' The car swerved (Implication on Z acceleration)'''
+            if(random.randint(0,1)==0):
+                swerve = True
+
+            ''' The length of the acceleration 1-4 seconds'''
+            timeLeftBraking = random.randint(1,4)
+
+            ''' Generate DataPoint '''
+            dataPoint =startAccelEvent(currentUser,swerve)
+
+        ''' Normal Driving '''
+        else:
+            dataPoint = generateNormalDataPoint(dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
+
+
+        ''' End of Accel Event '''
+        if timeLeftBraking < 0 :
+            timeLeftBraking = 0
+            critical = False
+            swerve = False
+            endAccelEvent(currentUser)
+
+        ''' We may add the array instead of each individual dataPoint '''
+        dataList.append(dataPoint)
+
+
 
         db.session.add(dataPoint)
         db.session.commit()
 
-        '''
+'''
+    This function shall find a new datapoint that satisfies the following requirements
 
+    1) generates a change in x Delta
+    2) Randomly either decreases or increases the data point
+
+'''
+def generateNormalDataPoint(previousX,previousY,previousZ, currentUser):
+
+    '''Generate random acceleration changes for x,y,z '''
+    xDelta = previousX + random.uniform(-.12,.12)
+    yDelta = previousY + random.uniform(-.05,.05)
+    zDelta = previousZ + random.uniform(-.09,.09)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    return dataPoint
+
+'''
+    This Function generates a datapoint for the start of a Accel event
+'''
+
+def startAccelEvent(currentUser,swerve):
+
+
+    ''' Generate Either Negative (braking) or Positive X datapoint '''
+    if(random.randint(0,1) == 0):
+        xDelta = 0 - random.uniform(.90,1.65)
+    else:
+        xDelta = random.uniform(.90,1.65)
+
+    ''' Generate Either Negative (braking) or Positive Z datapoint '''
+    if((random.randint(0,1) == 0) && (swerve == True)):
+         zDelta = 0 - random.uniform(.25,.70)
+    elif swerve == True:
+        zDelta = random.uniform(.25,.70)
+    else:
+        zDelta = random.uniform(-.13,.13)
+
+
+    yDelta =  random.uniform(-.05,.05)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+
+    return dataPoint
+
+def continueAccelEvent(previousX,previousY,previousZ, currentUser):
+
+  '''Generate random acceleration changes for x,y,z '''
+    xDelta = previousX + random.uniform(-.12,.12)
+    yDelta = previousY + random.uniform(-.05,.05)
+    zDelta = previousZ + random.uniform(-.09,.09)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+
+    return dataPoint
+
+''' Generate a datapoint for the end of an acceleration '''
+def endAccelEvent(currentUser):
+
+    '''Generate random acceleration changes for x,y,z '''
+    xDelta = random.uniform(-.10,.10)
+    yDelta = random.uniform(-.05,.05)
+    zDelta = random.uniform(-.09,.09)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, currentUser)
+    return dataPoint
