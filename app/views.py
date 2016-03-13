@@ -122,7 +122,6 @@ def user_config():
         .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
     accel = db.session.query(models.Acceleration).filter_by(user_id=current_user.id).one_or_none()
-    print(accel)
 
     return render_template('config.html', form1=HighRiskTimeForm(),
                            form2=AccelerateForm(), times=times, accel=accel)
