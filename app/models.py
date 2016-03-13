@@ -31,6 +31,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(255), unique=True)
     name = db.Column(db.String(255))
     data = db.relationship('Data', backref='user',lazy='dynamic')
+    accel = db.relationship('Acceleration', backref='accel', uselist=False)
 
     def __init__(self, email, name):
         self.email = email
@@ -52,8 +53,7 @@ class HighRiskTime(db.Model):
 
 class Acceleration(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user = db.relationship('User', backref=db.backref('accel', lazy='dynamic'))
-    user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
+    user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'), unique=True)
     delta_mph = db.Column(db.DECIMAL)
     seconds = db.Column(db.DECIMAL)
     g = db.Column(db.DECIMAL)

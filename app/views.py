@@ -121,8 +121,11 @@ def user_config():
     times = db.session.query(models.HighRiskTime).filter_by(user=current_user)\
         .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
+    accel = db.session.query(models.Acceleration).filter_by(user_id=current_user.id).one_or_none()
+    print(accel)
+
     return render_template('config.html', form1=HighRiskTimeForm(),
-                           form2=AccelerateForm(), times=times)
+                           form2=AccelerateForm(), times=times, accel=accel)
 
 
 """
@@ -151,6 +154,21 @@ def hrt():
 
     return redirect(url_for('user_config'))
 
+"""
+High Risk Time deletion
+"""
+
+
+@app.route('/hrt/delete/<hrt_id>')
+@login_required
+def delete_hrt(hrt_id):
+    hrt = models.HighRiskTime.query.filter_by(id=hrt_id).one_or_none()
+    if hrt:
+        db.session.delete(hrt)
+        db.session.commit()
+        flash("High risk time interval deleted.")
+    return redirect(url_for('user_config'))
+
 
 """
 Acceleration form handler
@@ -161,13 +179,30 @@ Acceleration form handler
 @login_required
 def accel():
     form = AccelerateForm(request.form)
-    if form.validate():
+    accel = models.User.query.filter_by(id=current_user.id).first().accel
+
+    if form.validate() and not accel:
         acc = models.Acceleration(form.delta_mph.data, form.seconds.data, current_user.id)
         db.session.add(acc)
         db.session.commit()
-        flash('Acceleration Method Added!')
+        flash('Acceleration threshold added!')
     else:
-        flash('Error')
+        flash('You can only have one acceleration threshold.')
 
+    return redirect(url_for('user_config'))
+
+"""
+Acceleration deletion
+"""
+
+
+@app.route('/accel/delete/')
+@login_required
+def del_accel():
+    accel = models.User.query.filter_by(id=current_user.id).first().accel
+    if accel:
+        db.session.delete(accel)
+        db.session.commit()
+        flash("Acceleration threshold deleted.")
     return redirect(url_for('user_config'))
 
