@@ -36,6 +36,7 @@ class User(db.Model, UserMixin):
     def __init__(self, email, name):
         self.email = email
         self.name = name
+        self.accel = Acceleration(20, 1, self.id)
 
 
 class HighRiskTime(db.Model):
