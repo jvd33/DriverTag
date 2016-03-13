@@ -140,18 +140,21 @@ def user_config():
     return render_template('config.html', form=form, times=times)
 
 
-@app.route('/daily_report')
+@app.route('/daily_report/<user_id>')
 @login_required
-def daily_report():
+def daily_report(user_id):
 
-    fake_user = models.User.query.filter(models.User.name=='Tim Smith').first()
+    fake_user = models.User.query.filter_by(id=user_id).first()
 
-    dataList = fake_user.data.all()
+    if user_id and fake_user:
+        dataList = fake_user.data.all()
 
-    #format the acceleration down to 6 decimal places
-    for data in dataList:
-        data.x_accelorometer = round(data.x_accelorometer,6)
-        data.y_accelorometer = round(data.y_accelorometer,6)
-        data.z_accelorometer = round(data.z_accelorometer,6)
+        #format the acceleration down to 6 decimal places
+        for data in dataList:
+            data.x_accelorometer = round(data.x_accelorometer,6)
+            data.y_accelorometer = round(data.y_accelorometer,6)
+            data.z_accelorometer = round(data.z_accelorometer,6)
 
-    return render_template('dailyReport.html', datas=dataList)
+        return render_template('dailyReport.html', datas=dataList)
+
+    return redirect(url_for('home'))

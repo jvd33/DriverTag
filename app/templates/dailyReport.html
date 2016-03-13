@@ -8,30 +8,40 @@
 
 <body>
     <a href="/home">Back</a>
-        <p>Your Data for {{ datas[0].timestamp.strftime("%A, %d. %B %Y ") }}</p>
-
-        <table border="1">
-
-        <!-- table headers -->
-        <tr>
-            <th>Timestamp</th>
-            <th>X-Accel</th>
-            <th>Y-Accel</th>
-            <th>Z-Accel</th>
-        </tr>
 
         {% if datas %}
-            {% for data in datas %}
-                <tr>
-                    <td>{{ data.timestamp }}</td>
-                    <td>{{ data.x_accelorometer }}</td>
-                    <td>{{ data.y_accelorometer }}</td>
-                    <td>{{ data.z_accelorometer }}</td>
-                </tr>
-            {% endfor %}
+            <p>Your Data for {{ datas[0].timestamp.strftime("%A, %d. %B %Y ") }}</p>
+
+            <table border="1">
+
+            <!-- table headers -->
+            <tr>
+                <th>Timestamp</th>
+                <th>X-Accel</th>
+                <th>Y-Accel</th>
+                <th>Z-Accel</th>
+            </tr>
+
+            {% if datas %}
+                {% for data in datas %}
+                    <tr>
+                        <td>{{ data.timestamp }}</td>
+                        <td>{{ data.x_accelorometer }}</td>
+                        <td>{{ data.y_accelorometer }}</td>
+                        <td>{{ data.z_accelorometer }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
+            </table>
+
+        {% else %}
+
+            <p>You have no Data</p>
+
         {% endif %}
 
-        </table>
+
 </body>
 
 </html>
