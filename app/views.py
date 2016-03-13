@@ -140,3 +140,18 @@ def user_config():
     return render_template('config.html', form=form, times=times)
 
 
+@app.route('/daily_report')
+@login_required
+def daily_report():
+
+    fake_user = models.User.query.filter(models.User.name=='Tim Smith').first()
+
+    dataList = fake_user.data.all()
+
+    #format the acceleration down to 6 decimal places
+    for data in dataList:
+        data.x_accelorometer = round(data.x_accelorometer,6)
+        data.y_accelorometer = round(data.y_accelorometer,6)
+        data.z_accelorometer = round(data.z_accelorometer,6)
+
+    return render_template('dailyReport.html', datas=dataList)
