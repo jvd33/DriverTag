@@ -1,0 +1,7 @@
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="40px" height="40px" viewBox="0 0 40 40" enable-background="new 0 0 40 40" xml:space="preserve">
+  <title>Home</title>
+  <rect id="base" x="3.707" y="34.333" fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" width="32.584" height="3.168"/>
+  <rect id="door" x="18.644" y="21.835" fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" width="3.577" height="9.854"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" d="M28.652 20.931h-4.575v-4.523h4.575V20.931zM7.974 31.688h24.051l0-15.582 0 0h4.266v-5.158L20 2.501 3.707 10.948v5.158h4.267M21.796 31.688h-5.87v-12.57h5.87V31.688z"/>
+  <rect x="26.788" y="19.118" fill-rule="evenodd" clip-rule="evenodd" fill="#FFFFFF" width="2.561" height="2.004"/>
+</svg>

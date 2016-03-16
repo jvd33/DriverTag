@@ -122,7 +122,7 @@ def user_config():
         .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
     return render_template('config.html', form1=HighRiskTimeForm(),
-                           form2=AccelerateForm(), times=times)
+                           form2=AccelerateForm(), times=times, jsname="config.js")
 
 
 """
