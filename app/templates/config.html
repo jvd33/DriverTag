@@ -17,23 +17,42 @@
 
     <p>Enter new risky driving times here</p>
     {% from "_formhelpers.html" import render_field %}
-    <form method="POST" action="/config">
+    <form method="POST" action="{{ url_for('hrt') }}">
         <dl>
-            {{ render_field(form.start_time) }}
-            {{ render_field(form.end_time) }}
+            {{ render_field(form1.start_time) }}
+            {{ render_field(form1.end_time) }}
+        </dl>
+
+        <p><input type=submit value="Submit"></p>
+    </form>
+
+    <form method="POST" action="{{ url_for('accel') }}">
+        <dl>
+            {{ render_field(form2.delta_mph) }}
+            {{ render_field(form2.seconds) }}
         </dl>
 
         <p><input type=submit value="Submit"></p>
     </form>
     <a href="/home">Back</a>
-        <p>Your High Risk Times:</p>
 
         {% if times %}
+            <p>Your High Risk Times:</p>
+
             {% for time in times %}
                     <p>High Risk Time Starts: {{ time.start_time }}</p>
                     <p>High Risk Time Ends: {{ time.end_time }}</p>
+                    <a href="{{ url_for('delete_hrt', hrt_id=time.id) }}">Delete this entry</a>
+
+
+                    </form>
                 <br></br>
             {% endfor %}
+        {% endif %}
+
+        {% if accel %}
+            <p>Your acceleration threshold is +/- {{ accel.g }} gs</p>
+            <a href="{{ url_for('del_accel') }}">Delete your acceleration threshold</a>
         {% endif %}
 
 </head>
