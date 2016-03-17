@@ -7,7 +7,7 @@ from threading import Thread
 from app.daily_update import *
 
 if __name__=="__main__":
-    schedule.every(10).seconds.do(run_every_10_seconds)
+    schedule.every().day.at("11:55").do(run_every_10_seconds)
     t = Thread(target=run_schedule)
     t.start()
     print("Started")
