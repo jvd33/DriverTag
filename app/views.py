@@ -141,6 +141,8 @@ def hrt():
         start = datetime.strptime(form.start_time.data, "%H:%M")
         end = datetime.strptime(form.end_time.data, "%H:%M")
         time = db.session.query(models.HighRiskTime).filter_by(user=current_user).all()
+        #time = db.session.query(models.HighRiskTime).filter_by(user='Tim Smith').all()
+        #highrisk = models.HighRiskTime(start, end, 2)
         highrisk = models.HighRiskTime(start, end, current_user.id)
 
         # if this time interval isnt unique, add it to the db
@@ -152,6 +154,25 @@ def hrt():
             flash('Time interval already added.')
 
     return redirect(url_for('user_config'))
+
+"""
+Getting Information for High Risk Times
+"""
+@app.route('/hrreport/<id_user>')
+@login_required
+def HighRiskTimesReport(id_user):
+	#user = models.User.query.filter_by(id=2).first()
+	user = models.User.query.filter_by(id=id_user).first()
+	#time = db.session.query(models.HighRiskTime).filter_by(user_id=2).all()
+	time = db.session.query(models.HighRiskTime).filter_by(user_id=id_user).all()
+	user_info = list()
+	if id_user and user:
+		dataList = user.data.all()
+		for data in dataList:
+			for t in time:
+				if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
+					user_info.append(data)
+		return render_template('dailyreports_hr.html', datas=user_info)
 
 """
 High Risk Time deletion
