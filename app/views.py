@@ -4,9 +4,6 @@ from app import *
 from app.forms import HighRiskTimeForm
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify
-from flask_mail import Message, Mail
-from celery import Celery
-mail=Mail(app)
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime
 
@@ -111,21 +108,7 @@ def logout():
 @app.route('/home')
 @login_required
 def home():
-    print(session['email'])
     return render_template('home.html')
-
-@celery.task()
-def send_email(email):
-    print('made it')
-    msg = Message("Hello",
-                  sender="driverTags@gmail.com",
-                  recipients=[session['email']])
-    msg.body = "testing"
-    msg.html = "<b>testing</b>"
-    msg.body = "testing"
-    msg.html = "<b>testing</b>"
-    print(msg)
-    mail.send(msg)
 
 @app.route('/config', methods=['GET', 'POST'])
 @login_required
@@ -152,3 +135,4 @@ def user_config():
         return render_template('config.html', form=form, times=times)
 
     return render_template('config.html', form=form, times=times)
+
