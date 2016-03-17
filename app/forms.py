@@ -1,6 +1,6 @@
 __author__ = "SWEN356 Team 4"
 
-from wtforms import Form, StringField, validators
+from wtforms import Form, StringField, validators, IntegerField, DecimalField
 import re
 
 
@@ -16,4 +16,6 @@ class HighRiskTimeForm(Form):
     end_time = StringField(u'Risk ends at:',
                              [validate_time])
 
-
+class AccelerateForm(Form):
+    delta_mph = DecimalField("Change in speed (mph):", [validators.required()])
+    seconds = DecimalField("Over interval (seconds)", [validators.required()])

@@ -1,6 +1,6 @@
 from app import db
 from flask_login import UserMixin
-from datetime import time
+from datetime import datetime
 
 class Data(db.Model):
      id = db.Column(db.Integer, primary_key=True)
@@ -16,27 +16,27 @@ class Data(db.Model):
 
      ''' Foreign Key for a User '''
      user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
-     user = db.relation('User', backref=db.backref('data',lazy='dynamic'))
+     '''user = db.relation('User', backref=db.backref('data',lazy='dynamic'))'''
 
-     def __init__(self, xgyro,ygyro,zgyro,xaccel,yaccel,zaccel,latitude,longitude):
-         self.x_gyroscope = xgyro
-         self.y_gyroscope = ygyro
-         self.z_gyroscope = zgyro
+     def __init__(self, xaccel,yaccel,zaccel, time, user):
          self.x_accelorometer = xaccel
          self.y_accelorometer = yaccel
          self.z_accelorometer = zaccel
-         self.latitude = latitude
-         self.longitude = longitude
+         self.timestamp = time
+         self.user_id = user.id
 
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
     name = db.Column(db.String(255))
+    data = db.relationship('Data', backref='user',lazy='dynamic')
+    accel = db.relationship('Acceleration', backref='accel', uselist=False)
 
     def __init__(self, email, name):
         self.email = email
         self.name = name
+        self.accel = Acceleration(20, 1, self.id)
 
 
 class HighRiskTime(db.Model):
@@ -50,3 +50,17 @@ class HighRiskTime(db.Model):
         self.start_time = start_time
         self.end_time = end_time
         self.user_id = user_id
+
+
+class Acceleration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'), unique=True)
+    delta_mph = db.Column(db.DECIMAL)
+    seconds = db.Column(db.DECIMAL)
+    g = db.Column(db.DECIMAL)
+
+    def __init__(self, mph, s, user_id):
+        self.mph = mph
+        self.seconds = s
+        self.user_id = user_id
+        self.g = float((mph/s)) * .045585  # in gs!
