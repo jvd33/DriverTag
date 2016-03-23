@@ -3,7 +3,7 @@ __author__ = 'SWEN356 Team 4'
 from app import *
 from app.forms import HighRiskTimeForm
 from flask_oauthlib.client import OAuth
-from flask import render_template, redirect, url_for, session, request, flash, jsonify
+from flask import render_template, redirect, url_for, session, request, flash, jsonify, json
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime
 
@@ -146,6 +146,11 @@ def daily_report(user_id):
 
     fake_user = models.User.query.filter_by(id=user_id).first()
 
+    x_accel = []
+    y_accel = []
+    z_accel = []
+    timestamps = []
+
     if user_id and fake_user:
         dataList = fake_user.data.all()
 
@@ -154,7 +159,16 @@ def daily_report(user_id):
             data.x_accelorometer = round(data.x_accelorometer,6)
             data.y_accelorometer = round(data.y_accelorometer,6)
             data.z_accelorometer = round(data.z_accelorometer,6)
+            x_accel.append(data.x_accelorometer)
+            y_accel.append(data.y_accelorometer)
+            z_accel.append(data.z_accelorometer)
+            timestamps.append(data.timestamp)
 
-        return render_template('dailyReport.html', datas=dataList)
+        xaccel_string = ",".join(map(str, x_accel))
+        yaccel_string = ",".join(map(str, y_accel))
+        zaccel_string = ",".join(map(str, z_accel))
+        timestamp_string = ",".join(map(str, timestamps))
+
+        return render_template('dailyReport.html', datas=dataList ,x_accel=xaccel_string, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
 
     return redirect(url_for('home'))
