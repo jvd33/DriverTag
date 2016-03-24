@@ -162,13 +162,11 @@ def daily_report(user_id):
             x_accel.append(data.x_accelorometer)
             y_accel.append(data.y_accelorometer)
             z_accel.append(data.z_accelorometer)
-            timestamps.append(data.timestamp)
+            timestamps.append(str(data.timestamp))
 
-        xaccel_string = ",".join(map(str, x_accel))
-        yaccel_string = ",".join(map(str, y_accel))
-        zaccel_string = ",".join(map(str, z_accel))
-        timestamp_string = ",".join(map(str, timestamps))
+        xaccel_string = [float(i) for i in x_accel]
+        points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
+        yaccel_string = [str(i) for i in y_accel]
 
-        return render_template('dailyReport.html', datas=dataList ,x_accel=xaccel_string, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
-
+        return render_template('dailyReport.html', datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
     return redirect(url_for('home'))
