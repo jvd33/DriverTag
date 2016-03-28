@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DriverTag</title>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery-1.12.1.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery-ui.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery.mask.js') }}"></script>
+<script type="text/javascript" src="{{ url_for('static', filename='javascript/jquery.datetimepicker.min.js') }}"></script>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles/jquery-ui.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles/style.css') }}">
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='styles/jquery.datetimepicker.css') }}">
+{% if jsname %}
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript//'+jsname) }}"></script>
+{% endif %}
+</head>
+<body>
+
+<div id="wrapper">
+
+  <div id="header" style="z-index:1">
+
+    <div class="headercell" id="home_logo"><a href="/home"><span class="linkspans" style="max-width: 200px;"></span><img src="{{ url_for('static', filename='images/logo.png') }}" class="sbhide" id="home-logo-image" border="0"><img src="{{ url_for('static', filename='images/logo.png') }}" class="sbshow" border="0"></a></div>
+    <div class="headercell">&nbsp;</div>
+    <div class="headernav" id="divnav">
+    <table style="width: 100%"><tr class="headernavcell"><td style="text-align: right"><a href="/logout"><span class="linkspans"></span><img src="{{ url_for('static', filename='images/account.svg') }}" border="0"></a></td><td id="account_log" style="padding-left: .5em" class="sbhide">Log Out</td></tr></table></div>
+      </div>
+  <div id="nav">
+
+    <div class="leftnav"><a href="/home"><span class="linkspans"></span><img src="{{ url_for('static', filename='images/home.svg') }}" border="0"><br>Home</a></div>
+    <div class="leftnav"><a href="/config"><span class="linkspans"></span><img src="{{ url_for('static', filename='images/preferences.svg') }}" border="0"><br>Configuration</a></div>
+    <div class="leftnav"><a href="/reports"><span class="linkspans"></span><img src="{{ url_for('static', filename='images/billing.svg') }}" border="0"><br>Reports</a></div>
+
+  </div>
+
+  <div id="page">
+
+    <div id="main">
+         {% block body %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>

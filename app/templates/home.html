@@ -1,9 +1,5 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title>DriverTag</title>
-    <h1>DriverTag</h1>
+{% extends "layout.html" %}
+{% block body %}
 
     {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -15,10 +11,5 @@
 
     <h3>Hello {{ session.name }}</h3>
 
-    <a href="/logout">Logout</a>
-    <a href="/config">Configuration</a>
-</head>
-<body>
+{% endblock %}
 
-</body>
-</html>

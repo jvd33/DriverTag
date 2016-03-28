@@ -1,0 +1,1222 @@
+/* ------------------------------------------ */
+/*       These are the default styles         */
+/* ------------------------------------------ */
+/* ------------------------------------------ */
+/*
+/* Colors                                     */
+/*                                            */
+/* Frame:
+/*   Main - #005596                           */
+/*   Body Background - #f1f5ff                */
+/*   Accent 1 (Hover) - #0091FF               */
+/*   Text - #FFFFFF;                          */
+/*   Link - undefined                         */
+/*   Link (Visited) - undefined               */
+/*   Link (Active) - undefined                */
+/*                                            */
+/* Page:                                      */
+/*   Main - #FFFFFF;                          */
+/*   Accent 1 (Border) - #005596              */
+/*   Accent 2 (Rules) - #c3c3c3               */
+/*   Accent 3 (Title) - #e7e7e7               */
+/*   Text - #282828                           */
+/*                                            */
+/* Control:                                   */
+/*   Control Border - #CCC                    */
+/*   Control Required/Error - #FFBDC1         */
+/*   Button - #f6f6f6                         */
+/*   Button Border - #CCC                     */
+/*   Button Text - #1C94C4                    */
+/*   Button Accent 1 (Hover) - #d8eeff        */
+/*   Button Accent 2 (Border) - #0092ff       */
+/*   Button Accent 3 (Text) - #0092ff         */
+
+
+
+
+
+
+
+
+/* General -----------------------------------*/
+
+HTML {
+  height: 100%;
+}
+
+BODY {
+  font-family: Arial, Tahoma, Arial;
+  font-size: 12px;
+  margin: 0;
+  height: 100%;
+  background-color: #f1f5ff;
+}
+
+DIV {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+A {
+  text-decoration: none;
+}
+
+@viewport {
+  width: device-width;
+}
+
+
+/* Structure ---------------------------------*/
+
+#wrapper {
+  padding: 0px 0px 100px; 
+  width: 100%;
+  min-height: 100%;
+  position: relative;
+}
+
+#header {
+  position: fixed;
+  top: 0;
+  margin: 0;
+  width: 100%;
+  background-color: #005596;
+  display: table;
+}
+
+#nav {
+  margin: 0 auto;
+  padding: 5px;
+  width: 100px;
+  background-color: #005596;
+  position: fixed;
+  top: 59px;
+  height: 100%;
+}
+
+
+#admin_nav {
+  margin: 0 auto;
+  padding: 5px;
+  width: 100px;
+  background-color: #005596;
+  position: fixed;
+  top: 59px;
+  height: 100%;
+}
+
+
+#page {
+  margin-left: 105px;
+  margin-top: 75px;
+}
+
+#main {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#body {
+  padding-bottom: 50px;
+}
+
+#footer {
+  position: absolute;
+  bottom: 70px;
+  width: 100%;
+  left: 0;
+}
+
+#impmsg {
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  border: solid red 2px;
+  -webkit-background-clip: padding-box; 
+  -moz-background-clip: padding; 
+  background-clip: padding-box;
+  padding: 5px; 
+  margin: 10px;
+  background-color: #FFFFFF;
+}
+
+
+/* Header Styles -----------------------------*/
+
+.headercell {
+  display: table-cell;
+  color: #FFFFFF;
+  vertical-align: middle;
+  font-size: 1.20em;
+  position: relative;
+}
+
+.headernav {
+  color: #FFFFFF;
+  vertical-align: middle;
+  font-size: 1.20em;
+  float: right;
+  padding: 1em;
+  position: relative;
+}
+
+.headernav a {
+  color: #FFFFFF;
+}
+
+.headernav:hover {
+  background-color: #0091FF;
+}
+
+.headernav a :visited {
+  color: #FFFFFF;
+}
+
+.headernav a :link {
+  color: #FFFFFF;
+}
+
+#dropdown {
+  display: none;
+  position: relative;
+  top: 40px;
+  z-index:1;
+}
+
+.dropdownmenu {
+  position: absolute;
+  background-color: #005596;
+  min-width: 90px;
+  width: 100%;
+  padding: 1px;
+}
+
+.dropdownnav {
+  background-color: #FFFFFF;
+  padding: 2px;
+}
+
+.dropdownnav p {
+  background-color: #005596;
+  padding: 3pt;
+}
+
+.dropdownnav p:hover {
+  background-color: #0091FF;
+  cursor: pointer;
+}
+
+#libmenu {
+  display: none;
+  position: relative;
+  left: 80px;
+  z-index:1;
+}
+
+.sidebarmenu {
+  position: absolute;
+  background-color: #005596;
+  min-width: 90px;
+  width: 100%;
+  padding: 1px;
+}
+
+.sidebarnav {
+  background-color: #FFFFFF;
+  padding: 2px;
+}
+
+.sidebarnav p {
+  background-color: #005596;
+  padding: 3pt;
+}
+
+.sidebarnav p:hover {
+  background-color: #0091FF;
+  cursor: pointer;
+}
+
+
+
+/* Nav Bar Styles ----------------------------*/
+
+.leftnav {
+  color: #FFFFFF;
+  font-size: 1.20em;
+  text-align: center;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  position: relative;
+}
+
+.leftnav:hover {
+  background-color: #0091FF;
+}
+
+.leftnav :visited {
+  color: #FFFFFF;
+}
+
+.leftnav :link {
+  color: #FFFFFF;
+}
+
+.leftnavhide {
+  display: none !important;
+}
+
+.pagefullwidth {
+  margin-left: 0px !important;
+}
+
+
+/* Hidden ------------------------------------*/
+
+.sbshow {
+  display: none;
+}
+
+.sbshowrow {
+  display: none;
+}
+
+.mmshow {
+  display: none;
+}
+
+.mmshownav {
+  display: none;
+}
+
+
+/* Input ------------------------------------ */
+
+.ui_field {
+  width: calc(100% - 30px);
+}
+
+.inputopt {
+  font-family: inherit;
+  font-size: 100%;
+  border: 1px solid #CCC;
+  width: calc(100% - 30px);
+  max-width: 400px;
+}
+
+.inputreq {
+  font-family: inherit;
+  font-size: 100%;
+  background-color: #FFBDC1;
+  border: 1px solid #CCC;
+  width: calc(100% - 30px);
+  max-width: 400px;
+}
+
+.formbutton {
+  margin: 0.5em 0.4em 0.5em 0px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+  background: #f6f6f6;
+  font-weight: bold;
+  color: #1C94C4;
+  border-radius: 8px;
+  padding: 0.4em 1em;
+}
+
+.formbutton:hover {
+  border: 1px solid #0092ff;
+  background: #d8eeff;
+  font-weight: bold;
+  color: #0092ff;
+}
+
+.formbutton:active {
+  border: 1px solid #fbd850;
+  background: #ffffff url("images/ui-bg_glass_65_ffffff_1x400.png") 50% 50% repeat-x;
+  font-weight: bold;
+  color: #eb8f00;
+}
+
+/* Custom Combo Box ------------------------- */
+
+.custom-combobox-inputcombobox {
+  border: 1px solid #CCC;
+}
+
+.custom-combobox-input:hover {
+  border: 1px solid #CCC;
+}
+
+
+.custom-combobox-toggle {
+  border: 1px solid #CCC;
+}
+
+
+/* JS Links --------------------------------- */
+
+.jslink {
+  color: blue;
+}
+
+.jslink:hover {
+  cursor: pointer;
+}
+
+
+/* Button styles ---------------------------- */
+
+.btn {
+  background: #3498db;
+  background-image: -webkit-linear-gradient(top, #3498db, #005596);
+  background-image: -moz-linear-gradient(top, #3498db, #005596);
+  background-image: -ms-linear-gradient(top, #3498db, #005596);
+  background-image: -o-linear-gradient(top, #3498db, #005596);
+  background-image: linear-gradient(to bottom, #3498db, #005596);
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 8px 18px 8px 18px;
+  border: solid #005596 2px;
+  text-decoration: none;
+  display: inline-block;
+  width: 50px;
+}
+
+.btn:hover {
+  background: #3cb0fd;
+  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  text-decoration: none;
+}
+
+
+/* Dashboard styles ------------------------- */
+
+#quicklinks {
+  min-width: 300px;
+  width: 30%; 
+  float: left; 
+  display: table-cell; 
+  vertical-align: middle;
+  margin-left: 10px; 
+  padding: 0; 
+}
+
+#actlog {
+  width: 30%;
+  float: left; 
+  display: table-cell; 
+  vertical-align: middle;
+  margin-left: 10px; 
+  padding: 0; 
+  min-width: 300px;
+}
+
+#filelog {
+  width: 30%;
+  float: left; 
+  display: table-cell; 
+  vertical-align: middle;
+  margin-left: 10px; 
+  padding: 0; 
+  min-width: 300px;
+}
+
+#invoicelog {
+  width: 50%;
+  float: left; 
+  display: table-cell; 
+  vertical-align: middle;
+  margin-left: 10px; 
+  padding: 0; 
+  min-width: 400px;
+}
+
+#billingover {
+  width: 35%;
+  float: left; 
+  display: table-cell; 
+  vertical-align: middle;
+  margin-left: 10px; 
+  padding: 0; 
+  min-width: 300px;
+}
+
+#alerts {
+  clear: both;
+  width: calc(90% + 20px);
+  margin-left: 10px; 
+  padding: 0; 
+}
+
+.dbheading {
+  width: calc(90% + 20px);
+  margin-left: 10px; 
+  padding: 0; 
+}
+
+.dbwelcome{
+  width: calc(90% + 20px);
+  margin-left: 10px; 
+  padding: 0; 
+}
+
+.dbcontainer {
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  border-radius: 8px;
+  border: solid #005596 2px;
+  -webkit-background-clip: padding-box; 
+  -moz-background-clip: padding; 
+  background-clip: padding-box;
+  padding: 5px; 
+  margin-bottom: 10px;
+  background-color: #FFFFFF;
+}
+
+.dbtitle {
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+  border: solid #e7e7e7 2px;
+  border-bottom-color: #c3c3c3;
+  padding: 0 10px; 
+  margin-bottom: 10px;
+  background-color: #e7e7e7;
+}
+
+.dbcontent {
+  padding: 0 10px; 
+  margin-bottom: 10px;
+}
+
+/* General List Styles ---------------------- */
+
+.selectable-listrow:hover {
+  background-color: #d8eeff;
+  border: 1px solid #005596;
+}
+
+.listframe {
+  border-collapse: collapse; 
+  border-spacing: 0;
+  border: 1px solid rgb(150, 150, 150);
+}
+
+.listheading {
+  font-weight: bold;
+  color: rgb(255, 255, 255);
+  background-color: rgb(175, 175, 175);
+  border: 1px solid gray;
+}
+
+.listheadinglink {
+  text-decoration: none;
+  color: rgb(255, 255, 255);
+}
+
+.listeven {
+  background-color: rgb(220, 220, 220);
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 0;
+  border-right: 0;
+  vertical-align: top;
+}
+
+.listodd {
+  background-color: rgb(245, 245, 245);
+  border-top: 1px solid gray;
+  border-bottom: 1px solid gray;
+  border-left: 0;
+  border-right: 0;
+  vertical-align: top;
+}
+
+.listheading td,
+.listeven td,
+.listodd td {
+  padding: 5px;
+  border-left: 1px solid gray;
+}
+
+
+/* Text styles ------------------------------ */
+
+.text14 {
+  font-size: 120%;
+  color: #282828;
+  padding: 3pt;
+  margin-bottom: 3pt;
+  margin-top: 0;
+  text-align: left;
+}
+
+.text12 {
+  color: #282828;
+  padding: 3pt;
+  margin-bottom: 3pt;
+  margin-top: 0;
+  text-align: left;
+}
+
+.text10 {
+  font-size: 84%;
+  color: #282828;
+  padding: 3pt;
+  margin-bottom: 3pt;
+  margin-top: 0;
+  text-align: left;
+}
+
+.head20 {
+  font-size: 166%;
+  color: #282828;
+  padding: 3pt;
+  margin-bottom: 3pt;
+  margin-top: 0;
+  font-weight: bold;
+}
+
+.head14 {
+  font-size: 120%;
+  color: #282828;
+  padding: 3pt;
+  margin-bottom: 3pt;
+  margin-top: 0;
+  font-weight: bold;
+}
+
+
+/* Rules -------------------------------------*/
+
+.nfrule {
+  border-bottom: dotted #c3c3c3 2px;
+}
+
+.diagrule {
+  border-bottom: dotted #c3c3c3 2px;
+}
+
+
+/* Error Reporting Styles ------------------- */
+
+.errorcontainer {
+max-width: 600px;
+border: 2px solid red;
+padding: 7px;
+padding-bottom: 0;
+margin: auto auto 20px;
+background-color: #f0f0f0;
+}
+
+.errorheading {
+text-align: left;
+font-weight: bold;
+padding: 5px 5px 5px 15px;
+font-size: 116%;
+margin: -7px;
+margin-bottom: 0px;
+background-color: #c00;
+color: #fff; 
+}
+  
+.erroritem {
+font-size: 100%;
+list-style: square; 
+}
+
+.inputerror {
+  font-family: inherit;
+  font-size: 100%;
+  background-color: #FFBDC1;
+  border: 2px solid red;
+  width: calc(100% - 30px);
+  max-width: 400px;
+}
+
+.selecterror {
+font-family: inherit;
+font-size: 100%;
+width: 150px;
+background-color: #FFBDC1;
+border: 2px solid red;
+}
+
+.erroricon {
+width: 15px;
+height: 15px;
+vertical-align: middle;
+border: 0;
+cursor: pointer;
+}
+
+.erroriconcombo {
+width: 15px;
+height: 15px;
+vertical-align: middle;
+border: 0;
+cursor: pointer;
+padding-left: 23px;
+}
+
+.errortext {
+color: red;
+}
+
+/* Miscellaneous -----------------------------*/
+
+.nopadding {
+  padding: 0;
+}
+
+.loadingfloat {
+  z-index:1;
+  position: fixed;
+  width: 300px;
+  top: 50px;
+  left: calc(50% - 150px);
+  border: 1pt solid black;
+  background-color: #FFFFFF;
+}
+
+.redirectfloat {
+  z-index:1;
+  position: fixed;
+  width: 300px;
+  top: 30%;
+  left: calc(50% - 150px);
+  border: 1pt solid black;
+  background-color: #FFFFFF;
+  display: none;
+}
+
+.loading {
+   height: 40px;
+   width: 40px;
+   background-image: url(../images/waiting.png);
+   margin-left: auto;
+   margin-right: auto;
+   margin-top: 10px;
+   -webkit-animation-name: spin;
+   -webkit-animation-duration: 4000ms;
+   -webkit-animation-iteration-count: infinite;
+   -webkit-animation-timing-function: linear;
+   -moz-animation-name: spin;
+   -moz-animation-duration: 4000ms;
+   -moz-animation-iteration-count: infinite;
+   -moz-animation-timing-function: linear;
+   -ms-animation-name: spin;
+   -ms-animation-duration: 4000ms;
+   -ms-animation-iteration-count: infinite;
+   -ms-animation-timing-function: linear;
+    
+   animation-name: spin;
+   animation-duration: 4000ms;
+   animation-iteration-count: infinite;
+   animation-timing-function: linear;
+}
+@-ms-keyframes spin {
+  from { -ms-transform: rotate(0deg); }
+  to { -ms-transform: rotate(360deg); }
+}
+@-moz-keyframes spin {
+  from { -moz-transform: rotate(0deg); }
+  to { -moz-transform: rotate(360deg); }
+}
+@-webkit-keyframes spin {
+  from { -webkit-transform: rotate(0deg); }
+  to { -webkit-transform: rotate(360deg); }
+}
+@keyframes spin {
+  from { transform:rotate(0deg); }
+  to { transform:rotate(360deg); }
+}
+
+.paid {
+  color: green;
+}
+
+.unpaid {
+color: red;
+}
+/* ------------------------------------------ */
+/*  These are the styles for smaller screen   */
+/* ------------------------------------------ */
+
+@media screen and (max-width:1250px) {
+  .dashboard {
+    min-height: 375px !important;
+  }
+}
+
+/* ------------------------------------------ */
+/*  These are the styles for mobile viewing   */
+/* ------------------------------------------ */
+
+/* Small Banner ------------------------------*/
+
+@media screen and (max-width:750px) {
+
+  .sbhide {
+    display: none;
+  }
+
+  .sbshow {
+    display: inline-block;
+  }
+
+  .sbshowrow {
+    display: table-row;
+  }
+
+  .dropdownmenu {
+    left: -50px;
+  }
+
+  .dashboard {
+    min-height: 375px !important;
+  }
+}
+
+/* Hide the Navbar and Mobile Menu -----------*/
+
+@media screen and (max-width:550px) {
+
+  #nav {
+    display: none;
+  }
+
+  #page {
+    margin-left: 0;
+  }
+
+  .mmhide {
+    display: none;
+  }
+
+  .mmshow {
+    display: inline-block;
+  }
+
+  .mmshownav {
+    display: block;
+  }
+
+  #main {
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+  }
+
+  .dashboard {
+    min-height: 375px !important;
+  }
+}
+
+
+/* BELOW ARE STYLES NOT LOOKED AT FROM THE OLD PORTAL */
+
+/*Linking ----------------------------*/
+
+.textinall12 a:link, .textinall12 a:active, .textinall12 a:visited {
+text-decoration: none;
+color: #3D474F;
+font-weight: bold;
+}
+
+.textinall10 a:link, .textinall10 a:active, .textinall10 a:visited {
+text-decoration: none;
+color: blue;
+font-weight: normal;
+}
+
+.textinall8 a:link, .textinall10 a:active, .textinall10 a:visited {
+text-decoration: none;
+color: blue;
+font-weight: normal;
+}
+
+.linkspans {
+  position:absolute; 
+  width:100%;
+  height:100%;
+  top:0;
+  left: 0;
+  z-index: 1;
+}
+
+/*Main Body Text Styles --------------*/
+
+
+
+.text11 {
+font-size: 105%;
+color: #282828;
+padding: 3pt;
+margin-bottom: 3pt;
+margin-top: 0;
+text-align: left;
+}
+
+.text8 {
+font-size: 85%;
+color: #282828;
+padding: 3pt;
+text-align: left;
+}
+
+.textcallout10 {
+font-size: 100%;
+color: #282828;
+padding: 3pt;
+margin-bottom: 3pt;
+margin-top: 0;
+text-align: left;
+font-style: italic;
+}
+
+.textindent1 {
+font-size: 100%;
+color: #282828;
+padding: 3pt;
+margin-bottom: 3pt;
+margin-top: 0;
+margin-left: 22pt;
+text-align: left;
+}
+
+.textindent2 {
+font-size: 100%;
+color: #282828;
+padding: 3pt;
+margin-bottom: 3pt;
+margin-top: 0;
+margin-left: 44pt;
+text-align: left;
+}
+
+/*Heading Text Styles ----------------*/
+
+
+.head10 {
+font-size: 100%;
+color: #282828;
+padding: 3pt;
+margin-bottom: 3pt;
+margin-top: 0;
+font-weight: bold;
+}
+
+.head8 {
+font-size: 85%;
+color: #282828;
+padding: 3pt;
+font-weight: bold;
+}
+
+/*General Form Styles ----------------*/
+
+
+.selectopt {
+font-family: inherit;
+font-size: 100%;
+border: 1px solid gray;
+  width: calc(100% - 30px);
+  max-width: 400px;
+}
+
+.selectreq {
+font-family: inherit;
+font-size: 100%;
+background-color: #FFBDC1;
+border: 1px solid gray;
+width: calc(100% - 30px);
+max-width: 400px;
+}
+
+.error {
+font-family: inherit;
+font-size: 100%;
+color: rgb(255, 0, 0);
+}
+
+.combobox {
+font-family: inherit;
+font-size: 100%;
+}
+
+.field10 {
+font-size: 100%;
+color: rgb(26, 54, 104);
+padding: 3pt; 
+margin-bottom: 3pt;
+margin-top: 0;
+text-align: left;
+}
+
+/*Click to Edit Form Styles ----------*/
+
+.editabletext {
+cursor: text;
+outline-color: rgb(255, 255, 255);
+vertical-align: top;
+transition: outline 200ms ease 0s;
+padding: 1px;
+}
+
+.editabletext:hover {
+border: 1px solid black;
+padding: 0px;
+}
+
+
+.checkbox {
+
+}
+
+/*Toolbox Button Styles --------------*/
+
+.toolbox {
+width: 100%;
+height: 36px;
+padding: 5px;
+background: -moz-linear-gradient(center top, rgb(245, 245, 245) 5%, rgb(175, 175, 175) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, rgb(245, 245, 245)), color-stop(1, rgb(175, 175, 175)));
+background-image: linear-gradient(to bottom, rgb(245, 245, 245) 5%, rgb(175, 175, 175) 100%);
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#afafaf');
+background-color: rgb(200, 200, 200);
+border: 1px solid rgb(100, 100, 100);
+display: block;
+}
+
+.tool {
+-moz-box-shadow: inset 0 1px 0 0 rgb(245, 245, 245);
+-webkit-box-shadow: inset 0 1px 0 0  rgb(245, 245, 245);
+box-shadow: inset 0 1px 0 0  rgb(245, 245, 245);
+background: -moz-linear-gradient(center top, rgb(245, 245, 245) 5%, rgb(175, 175, 175) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, rgb(245, 245, 245)), color-stop(1, rgb(175, 175, 175)));
+background-image: linear-gradient(to bottom, rgb(245, 245, 245) 5%, rgb(175, 175, 175) 100%);
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#afafaf');
+background-color: rgb(245, 245, 245);
+-moz-border-radius: 6px;
+-webkit-border-radius: 6px;
+border-radius: 6px;
+border: 1px solid rgb(150, 150, 150);
+display: inline-block;
+color: rgb(79, 79, 79);
+font-size: 85%;
+font-weight: bold;
+padding: 4px 24px;
+text-decoration: none;
+height: 24px;
+float: right;
+}
+
+.tool:hover {
+background: -moz-linear-gradient(center top, rgb(175, 175, 175) 5%, rgb(245, 245, 245) 100%);
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0.05, rgb(175, 175, 175)), color-stop(1, rgb(245, 245, 245)));
+background-image: linear-gradient(to bottom, rgb(175, 175, 175) 5%, rgb(245, 245, 245) 100%);
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#afafaf', endColorstr='#f5f5f5');
+background-color: rgb(175, 175, 175);
+cursor: pointer;
+}
+
+.tool:active {
+position: relative;
+top: 1px;
+}
+
+.disabled {
+border-radius: 6px;
+border: 1px solid rgb(150, 150, 150);
+display: inline-block;
+color: rgb(150, 150, 150);
+font-size: 85%;
+font-weight: bold;
+padding: 4px 24px;
+text-decoration: none;
+height: 24px;
+float: right;
+}
+
+/*Tool Pop-up Menu Styles ------------*/
+
+.popupcontainer {
+position: relative;
+margin: 0;
+width: 60px;
+height: 20px;
+text-align: left;
+}
+
+.popup {
+position: absolute;
+left: 25px;
+top: 15px;
+visibility: hidden;
+z-index: 200;
+}
+
+.menu {
+position: absolute;
+left: 0px;
+top: 0px;
+visibility: hidden;
+background-color: rgb(245, 245, 245);
+border: 1px solid gray;
+width: 125px;
+font-size: 8pt;
+}
+
+.menu td {
+padding: 3px;
+}
+
+.menu td:hover {
+font-weight: bold;
+cursor: pointer;
+}
+
+.separator {
+height: 1px;
+background-color: rgb(200, 200, 200);
+}
+
+/*Timeout Styles ---------------------*/
+
+.tocontainer {
+position: fixed;
+top: 0px;
+left: 0px;
+text-align: center;
+width: 100%;
+height: 100%;
+background: url('../images/tobg.png') repeat fixed 0% 0%;
+z-index: 300;
+}
+
+.tomessage {
+position: absolute;
+top: 150px;
+left: 50%;
+width: 250px;
+background-color: #FFFFFF;
+border: Black 2px solid;
+padding: 15px;
+margin-right: auto;
+margin-left: -100px;
+z-index: 301;
+}
+
+/*Progress Styles ---------------------*/
+
+.progresscontainer {
+position: fixed;
+top: 0px;
+left: 0px;
+text-align: center;
+width: 100%;
+height: 5px;
+z-index: 300;
+}
+
+
+
+/*Resizable Table style --------------*/
+
+.grip {
+cursor:e-resize;
+}
+
+/*Library styles ---------------------*/
+.modified {
+color:green;    
+}
+
+.new {
+color:blue;
+}
+
+.original{
+color:black;
+}
+
+/*Invoice Styles ---------------------*/
+
+.invoicepaid {
+text-align: left;
+font-size: 20px;
+font-weight: bold;
+color: green;
+position: absolute;
+top: 100px;
+left: 50%;
+transform:rotate(-20deg);
+-ms-transform:rotate(-20deg);
+-webkit-transform:rotate(-20deg);
+}
+
+.invoicelistframe {
+border-collapse: collapse; 
+border-spacing: 0;
+border: 1px solid rgb(150, 150, 150);
+}
+
+.invoicelistheading {
+font-weight: bold;
+color: rgb(255, 255, 255);
+background-color: rgb(175, 175, 175);
+border: 1px solid gray;
+}
+
+.invoicelistheadinglink {
+text-decoration: none;
+color: rgb(255, 255, 255);
+}
+
+.invoicelisteven {
+background-color: rgb(220, 220, 220);
+border-top: 1px solid gray;
+border-bottom: 1px solid gray;
+border-left: 0;
+border-right: 0;
+padding: 0;
+vertical-align: top;
+}
+
+.invoicelistodd {
+background-color: rgb(245, 245, 245);
+border-top: 1px solid gray;
+border-bottom: 1px solid gray;
+border-left: 0;
+border-right: 0;
+padding: 0;
+vertical-align: top;
+}
+
+div.fileinputs {
+        position: relative;
+}
+
+div.fakefile {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        z-index: 1;
+        width:220px;
+}
+
+input.file {
+        position: relative;
+        text-align: right;
+        -moz-opacity:0 ;
+        filter:alpha(opacity: 0);
+        opacity: 0;
+        z-index: 2;
+}

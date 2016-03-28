@@ -1,6 +1,6 @@
 from app import db
 from flask_login import UserMixin
-from datetime import time
+from datetime import datetime
 
 class Data(db.Model):
      id = db.Column(db.Integer, primary_key=True)
@@ -25,6 +25,7 @@ class Data(db.Model):
          self.timestamp = time
          self.user_id = user.id
 
+
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True)
@@ -47,3 +48,18 @@ class HighRiskTime(db.Model):
         self.start_time = start_time
         self.end_time = end_time
         self.user_id = user_id
+
+
+class Acceleration(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.relationship('User', backref=db.backref('accel', lazy='dynamic'))
+    user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
+    delta_mph = db.Column(db.DECIMAL)
+    seconds = db.Column(db.DECIMAL)
+    g = db.Column(db.DECIMAL)
+
+    def __init__(self, mph, s, user_id):
+        self.mph = mph
+        self.seconds = s
+        self.user_id = user_id
+        self.g = float((mph/s)) * .045585  # in gs!

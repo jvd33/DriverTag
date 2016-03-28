@@ -1,0 +1,153 @@
+/* ------------------------------------------ */
+/*    These are the jquery override styles    */
+/* ------------------------------------------ */
+/* ------------------------------------------ */
+/*
+/* Colors                                     */
+/*                                            */
+/* Dialogs:                                   */
+/*   Main - #FFFFFF;                          */
+/*   Accent 1 (Border) - #005596              */
+/*   Accent 2 (Rules) - #c3c3c3               */
+/*   Accent 3 (Title) - #e7e7e7               */
+/*   Text - #282828                           */
+/*   Focus Overlay - #666666                  */
+/*                                            */
+/* Control:                                   */
+/*   Control Border - #CCC                    */
+/*   Control Required/Error - #FFBDC1         */
+/*   Button - #f6f6f6                         */
+/*   Button Border - #CCC                     */
+/*   Button Text - #1C94C4                    */
+/*   Button Accent 1 (Hover) - #d8eeff        */
+/*   Button Accent 2 (Border) - #0092ff       */
+/*   Button Accent 3 (Text) - #0092ff         */
+
+
+.ui-autocomplete {
+  border: 1px solid gray !important;
+  max-height: 200px;
+  max-width: 200px;
+  overflow-y: auto;
+  overflox-x: hidden;
+}
+
+.ui-button-icon-only {
+  min-height: 19px;
+  margin-top: -1px;
+}
+
+.ui-dialog {
+  padding: default;
+}
+
+.ui-dialog-title {
+  float: left;
+  white-space: nowrap;
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 120%;
+  color: #282828;
+}
+.ui-dialog {
+  float: left;
+  margin: .1em 0;
+  width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ui-menu .ui-state-focus,
+.ui-menu .ui-state-active {
+  margin: 0;
+}
+
+.ui-widget {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.ui-widget {
+  font-size: inherit;
+}
+
+.ui-widget input,
+.ui-widget select,
+.ui-widget textarea,
+.ui-widget button {
+  font-family: Arial,Tahoma,Sans-serif;
+}
+
+.ui-widget-content {
+  border: solid #005596 2px;
+  background-color: white;
+}
+
+.ui-widget-header {
+  -webkit-border-radius: 8px 8px 0 0;
+  -moz-border-radius: 8px 8px 0 0;
+  border-radius: 8px 8px 0 0;
+  border: solid #e7e7e7 2px;
+  border-bottom-color: #c3c3c3;
+  background: #e7e7e7;
+  color: #000000;
+  font-weight: bold;
+}
+
+.ui-state-default,
+.ui-widget-content .ui-state-default,
+.ui-widget-header .ui-state-default {
+  background: #f6f6f6;
+}
+
+.ui-state-hover,
+.ui-widget-content .ui-state-hover,
+.ui-widget-header .ui-state-hover,
+.ui-state-focus,
+.ui-widget-content .ui-state-focus,
+.ui-widget-header .ui-state-focus {
+  border: 1px solid #0092ff;
+  background: #d8eeff;
+  color: #0092ff;
+}
+
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-left,
+.ui-corner-tl {
+  -webkit-top-left-border-radius: 8px;
+  -moz-top-left-border-radius: 8px;
+  border-top-left-radius: 8px;
+}
+
+.ui-corner-all,
+.ui-corner-top,
+.ui-corner-right,
+.ui-corner-tr {
+  -webkit-top-right-border-radius: 8px;
+  -moz-top-right-border-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-left,
+.ui-corner-bl {
+  -webkit-bottom-left-border-radius: 8px;
+  -moz-bottom-left-border-radius: 8px;
+  border-bottom-left-radius: 8px;
+}
+
+.ui-corner-all,
+.ui-corner-bottom,
+.ui-corner-right,
+.ui-corner-br {
+  -webkit-bottom-right-border-radius: 8px;
+  -moz-bottom-right-border-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
+
+.ui-widget-overlay {
+  background: #666666;
+}
