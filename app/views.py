@@ -3,7 +3,7 @@ __author__ = 'SWEN356 Team 4'
 from app import *
 from app.forms import HighRiskTimeForm, AccelerateForm
 from flask_oauthlib.client import OAuth
-from flask import render_template, redirect, url_for, session, request, flash, jsonify
+from flask import render_template, redirect, url_for, session, request, flash, jsonify, json
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime, time
 
@@ -131,7 +131,6 @@ def user_config():
 High Risk Time form handler
 """
 
-
 @app.route('/hrt', methods=['POST'])
 @login_required
 def hrt():
@@ -178,7 +177,6 @@ def HighRiskTimesReport(id_user):
 High Risk Time deletion
 """
 
-
 @app.route('/hrt/delete/<hrt_id>')
 @login_required
 def delete_hrt(hrt_id):
@@ -189,11 +187,40 @@ def delete_hrt(hrt_id):
         flash("High risk time interval deleted.")
     return redirect(url_for('user_config'))
 
+@app.route('/daily_report/<user_id>')
+@login_required
+def daily_report(user_id):
+
+    fake_user = models.User.query.filter_by(id=user_id).first()
+
+    x_accel = []
+    y_accel = []
+    z_accel = []
+    timestamps = []
+
+    if user_id and fake_user:
+        dataList = fake_user.data.all()
+
+        #format the acceleration down to 6 decimal places
+        for data in dataList:
+            data.x_accelorometer = round(data.x_accelorometer,6)
+            data.y_accelorometer = round(data.y_accelorometer,6)
+            data.z_accelorometer = round(data.z_accelorometer,6)
+            x_accel.append(data.x_accelorometer)
+            y_accel.append(data.y_accelorometer)
+            z_accel.append(data.z_accelorometer)
+            timestamps.append(str(data.timestamp))
+
+        xaccel_string = [float(i) for i in x_accel]
+        points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
+        yaccel_string = [str(i) for i in y_accel]
+
+        return render_template('dailyReport.html', datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
+    return redirect(url_for('home'))
 
 """
 Acceleration form handler
 """
-
 
 @app.route('/accel', methods=['POST'])
 @login_required
@@ -215,7 +242,6 @@ def accel():
 Acceleration deletion
 """
 
-
 @app.route('/accel/delete/')
 @login_required
 def del_accel():
@@ -225,4 +251,3 @@ def del_accel():
         db.session.commit()
         flash("Acceleration threshold deleted.")
     return redirect(url_for('user_config'))
-

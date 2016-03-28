@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Daily Report</title>
+
+
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $('#chart').highcharts({
+                chart: {
+                    type: 'line'
+                },
+                title: {
+                    text: 'Daily Data'
+                },
+                xAxis: {
+                    categories: {{ timestamps|tojson|safe }}
+                },
+                yAxis: {
+                    allowDecimals: true,
+                    title: {
+                        text: 'Acceleration'
+                    }
+                },
+                plotOptions: {
+                    series:{
+                        turboThreshold: 0
+                    }
+                },
+                series: [{
+                    name: 'X-accel',
+                    data: {{ x_accel|tojson|safe }}
+                }]/*, {
+                    name: 'Y-accel',
+                    data: {{ y_accel|tojson|safe }}
+                }]*/
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <a href="/home">Back</a>
+
+        <div id="chart" style="width:100%; height:400px;"></div>
+
+
+        {% if datas %}
+            <p>Your Data for {{ datas[0].timestamp.strftime("%A, %d. %B %Y ") }}</p>
+
+            <table border="1">
+
+            <!-- table headers -->
+            <tr>
+                <th>Timestamp</th>
+                <th>X-Accel</th>
+                <th>Y-Accel</th>
+                <th>Z-Accel</th>
+            </tr>
+
+            {% if datas %}
+                {% for data in datas %}
+                    <tr>
+                        <td>{{ data.timestamp }}</td>
+                        <td>{{ data.x_accelorometer }}</td>
+                        <td>{{ data.y_accelorometer }}</td>
+                        <td>{{ data.z_accelorometer }}</td>
+                    </tr>
+                {% endfor %}
+            {% endif %}
+
+            </table>
+
+        {% else %}
+
+            <p>You have no Data</p>
+
+        {% endif %}
+
+
+</body>
+
+</html>
