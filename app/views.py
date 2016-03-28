@@ -3,7 +3,7 @@ __author__ = 'SWEN356 Team 4'
 from app import *
 from app.forms import HighRiskTimeForm, AccelerateForm
 from flask_oauthlib.client import OAuth
-from flask import render_template, redirect, url_for, session, request, flash, jsonify
+from flask import render_template, redirect, url_for, session, request, flash, jsonify, json
 from flask_login import login_user, login_required, logout_user, current_user
 from datetime import datetime, time
 
@@ -121,14 +121,15 @@ def user_config():
     times = db.session.query(models.HighRiskTime).filter_by(user=current_user)\
         .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
+    accel = db.session.query(models.Acceleration).filter_by(user_id=current_user.id).one_or_none()
+
     return render_template('config.html', form1=HighRiskTimeForm(),
-                           form2=AccelerateForm(), times=times, jsname="config.js")
+                           form2=AccelerateForm(), times=times, accel=accel,jsname="config.js")
 
 
 """
 High Risk Time form handler
 """
-
 
 @app.route('/hrt', methods=['POST'])
 @login_required
@@ -139,6 +140,8 @@ def hrt():
         start = datetime.strptime(form.start_time.data, "%H:%M")
         end = datetime.strptime(form.end_time.data, "%H:%M")
         time = db.session.query(models.HighRiskTime).filter_by(user=current_user).all()
+        #time = db.session.query(models.HighRiskTime).filter_by(user='Tim Smith').all()
+        #highrisk = models.HighRiskTime(start, end, 2)
         highrisk = models.HighRiskTime(start, end, current_user.id)
 
         # if this time interval isnt unique, add it to the db
@@ -151,23 +154,100 @@ def hrt():
 
     return redirect(url_for('user_config'))
 
+"""
+Getting Information for High Risk Times
+"""
+@app.route('/hrreport/<id_user>')
+@login_required
+def HighRiskTimesReport(id_user):
+	#user = models.User.query.filter_by(id=2).first()
+	user = models.User.query.filter_by(id=id_user).first()
+	#time = db.session.query(models.HighRiskTime).filter_by(user_id=2).all()
+	time = db.session.query(models.HighRiskTime).filter_by(user_id=id_user).all()
+	user_info = list()
+	if id_user and user:
+		dataList = user.data.all()
+		for data in dataList:
+			for t in time:
+				if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
+					user_info.append(data)
+		return render_template('dailyreports_hr.html', datas=user_info)
+
+"""
+High Risk Time deletion
+"""
+
+@app.route('/hrt/delete/<hrt_id>')
+@login_required
+def delete_hrt(hrt_id):
+    hrt = models.HighRiskTime.query.filter_by(id=hrt_id).one_or_none()
+    if hrt:
+        db.session.delete(hrt)
+        db.session.commit()
+        flash("High risk time interval deleted.")
+    return redirect(url_for('user_config'))
+
+@app.route('/daily_report/<user_id>')
+@login_required
+def daily_report(user_id):
+
+    fake_user = models.User.query.filter_by(id=user_id).first()
+
+    x_accel = []
+    y_accel = []
+    z_accel = []
+    timestamps = []
+
+    if user_id and fake_user:
+        dataList = fake_user.data.all()
+
+        #format the acceleration down to 6 decimal places
+        for data in dataList:
+            data.x_accelorometer = round(data.x_accelorometer,6)
+            data.y_accelorometer = round(data.y_accelorometer,6)
+            data.z_accelorometer = round(data.z_accelorometer,6)
+            x_accel.append(data.x_accelorometer)
+            y_accel.append(data.y_accelorometer)
+            z_accel.append(data.z_accelorometer)
+            timestamps.append(str(data.timestamp))
+
+        xaccel_string = [float(i) for i in x_accel]
+        points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
+        yaccel_string = [str(i) for i in y_accel]
+
+        return render_template('dailyReport.html', datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
+    return redirect(url_for('home'))
 
 """
 Acceleration form handler
 """
 
-
 @app.route('/accel', methods=['POST'])
 @login_required
 def accel():
     form = AccelerateForm(request.form)
-    if form.validate():
+    accel = models.User.query.filter_by(id=current_user.id).first().accel
+
+    if form.validate() and not accel:
         acc = models.Acceleration(form.delta_mph.data, form.seconds.data, current_user.id)
         db.session.add(acc)
         db.session.commit()
-        flash('Acceleration Method Added!')
+        flash('Acceleration threshold added!')
     else:
-        flash('Error')
+        flash('You can only have one acceleration threshold.')
 
     return redirect(url_for('user_config'))
 
+"""
+Acceleration deletion
+"""
+
+@app.route('/accel/delete/')
+@login_required
+def del_accel():
+    accel = models.User.query.filter_by(id=current_user.id).first().accel
+    if accel:
+        db.session.delete(accel)
+        db.session.commit()
+        flash("Acceleration threshold deleted.")
+    return redirect(url_for('user_config'))

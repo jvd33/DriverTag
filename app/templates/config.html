@@ -29,13 +29,24 @@
         <p><input type=submit value="Submit"></p>
     </form>
     <a href="/home">Back</a>
-        <p>Your High Risk Times:</p>
 
         {% if times %}
+            <p>Your High Risk Times:</p>
+
             {% for time in times %}
                     <p>High Risk Time Starts: {{ time.start_time }}</p>
                     <p>High Risk Time Ends: {{ time.end_time }}</p>
+                    <a href="{{ url_for('delete_hrt', hrt_id=time.id) }}">Delete this entry</a>
+
+
+                    </form>
                 <br></br>
             {% endfor %}
         {% endif %}
+        {% if accel %}
+            <p>Your acceleration threshold is +/- {{ accel.g }} gs</p>
+            <a href="{{ url_for('del_accel') }}">Delete your acceleration threshold</a>
+        {% endif %}
+
 {% endblock %}
+

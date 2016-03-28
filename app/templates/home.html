@@ -11,5 +11,9 @@
 
     <h3>Hello {{ session.name }}</h3>
 
+    <a href="/logout">Logout</a>
+    <a href="/config">Configuration</a>
+    <a href="/daily_report/{{ current_user.id }}">Daily Report</a>
 {% endblock %}
+</head>
 
