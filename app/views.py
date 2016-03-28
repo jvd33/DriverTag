@@ -1,11 +1,11 @@
 __author__ = 'SWEN356 Team 4'
 
 from app import *
-from app.forms import HighRiskTimeForm
+from app.forms import HighRiskTimeForm, AccelerateForm
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, jsonify, json
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
+from datetime import datetime, time
 
 
 
@@ -116,29 +116,55 @@ def home():
 @app.route('/config', methods=['GET', 'POST'])
 @login_required
 def user_config():
-    form = HighRiskTimeForm(request.form)
+
     # gets all the user's unique high risk times for display
     times = db.session.query(models.HighRiskTime).filter_by(user=current_user)\
         .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
-    if request.method == 'POST' and form.validate():
+    accel = db.session.query(models.Acceleration).filter_by(user_id=current_user.id).one_or_none()
+
+    return render_template('config.html', form1=HighRiskTimeForm(),
+                           form2=AccelerateForm(), times=times, accel=accel)
+
+
+"""
+High Risk Time form handler
+"""
+
+@app.route('/hrt', methods=['POST'])
+@login_required
+def hrt():
+    form = HighRiskTimeForm(request.form)
+    if form.validate():
 
         start = datetime.strptime(form.start_time.data, "%H:%M")
         end = datetime.strptime(form.end_time.data, "%H:%M")
         time = db.session.query(models.HighRiskTime).filter_by(user=current_user).all()
-        hrt = models.HighRiskTime(start.time(), end.time(), current_user.id)
+        highrisk = models.HighRiskTime(start, end, current_user.id)
 
         # if this time interval isnt unique, add it to the db
-        if (hrt.start_time, hrt.end_time) not in {t.start_time: t.end_time for t in time}.items():
-            db.session.add(hrt)
+        if (highrisk.start_time, highrisk.end_time) not in {t.start_time: t.end_time for t in time}.items():
+            db.session.add(highrisk)
             db.session.commit()
             flash('Time interval added. Be safe out there!')
         else:
             flash('Time interval already added.')
-        return render_template('config.html', form=form, times=times)
 
-    return render_template('config.html', form=form, times=times)
+    return redirect(url_for('user_config'))
 
+"""
+High Risk Time deletion
+"""
+
+@app.route('/hrt/delete/<hrt_id>')
+@login_required
+def delete_hrt(hrt_id):
+    hrt = models.HighRiskTime.query.filter_by(id=hrt_id).one_or_none()
+    if hrt:
+        db.session.delete(hrt)
+        db.session.commit()
+        flash("High risk time interval deleted.")
+    return redirect(url_for('user_config'))
 
 @app.route('/daily_report/<user_id>')
 @login_required
@@ -170,3 +196,37 @@ def daily_report(user_id):
 
         return render_template('dailyReport.html', datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
     return redirect(url_for('home'))
+
+"""
+Acceleration form handler
+"""
+
+@app.route('/accel', methods=['POST'])
+@login_required
+def accel():
+    form = AccelerateForm(request.form)
+    accel = models.User.query.filter_by(id=current_user.id).first().accel
+
+    if form.validate() and not accel:
+        acc = models.Acceleration(form.delta_mph.data, form.seconds.data, current_user.id)
+        db.session.add(acc)
+        db.session.commit()
+        flash('Acceleration threshold added!')
+    else:
+        flash('You can only have one acceleration threshold.')
+
+    return redirect(url_for('user_config'))
+
+"""
+Acceleration deletion
+"""
+
+@app.route('/accel/delete/')
+@login_required
+def del_accel():
+    accel = models.User.query.filter_by(id=current_user.id).first().accel
+    if accel:
+        db.session.delete(accel)
+        db.session.commit()
+        flash("Acceleration threshold deleted.")
+    return redirect(url_for('user_config'))
