@@ -157,25 +157,26 @@ def hrt():
 """
 Getting Information for High Risk Times
 """
+
+
 @app.route('/hrreport/<id_user>')
 @login_required
-def HighRiskTimesReport(id_user):
-	#user = models.User.query.filter_by(id=2).first()
-	user = models.User.query.filter_by(id=id_user).first()
-	#time = db.session.query(models.HighRiskTime).filter_by(user_id=2).all()
-	time = db.session.query(models.HighRiskTime).filter_by(user_id=id_user).all()
-	user_info = list()
-	if id_user and user:
-		dataList = user.data.all()
-		for data in dataList:
-			for t in time:
-				if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
-					user_info.append(data)
-		return render_template('dailyreports_hr.html', datas=user_info)
+def high_risk_report(id_user):
+    user = models.User.query.filter_by(id=id_user).first()
+    times = db.session.query(models.HighRiskTime).filter_by(user_id=id_user).all()
+    user_info = list()
+    if id_user and user:
+        dataList = user.data.all()
+        for data in dataList:
+            for t in times:
+                if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
+                    user_info.append(data)
+        return render_template('dailyreports_hr.html', datas=user_info)
 
 """
 High Risk Time deletion
 """
+
 
 @app.route('/hrt/delete/<hrt_id>')
 @login_required
@@ -186,6 +187,7 @@ def delete_hrt(hrt_id):
         db.session.commit()
         flash("High risk time interval deleted.")
     return redirect(url_for('user_config'))
+
 
 @app.route('/daily_report/<user_id>')
 @login_required
@@ -251,3 +253,13 @@ def del_accel():
         db.session.commit()
         flash("Acceleration threshold deleted.")
     return redirect(url_for('user_config'))
+
+"""
+Map page view
+"""
+
+
+@app.route('/map/<user_id>')
+@login_required
+def map_page(user_id):
+    return render_template('map.html', addlat=43.085419 , addlng=-77.662398)
