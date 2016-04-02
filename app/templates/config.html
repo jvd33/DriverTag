@@ -28,6 +28,18 @@
 
         <p><input type=submit value="Submit"></p>
     </form>
+
+    <form method="POST" action="{{ url_for('address') }}">
+        <dl>
+            {{ render_field(form3.addr) }}
+            {{ render_field(form3.city) }}
+            {{ render_field(form3.state) }}
+            {{ render_field(form3.zip) }}
+        </dl>
+
+        <p><input type=submit value="Submit"></p>
+    </form>
+
     <a href="/home">Back</a>
 
         {% if times %}
@@ -46,6 +58,11 @@
         {% if accel %}
             <p>Your acceleration threshold is +/- {{ accel.g }} gs</p>
             <a href="{{ url_for('del_accel') }}">Delete your acceleration threshold</a>
+        {% endif %}
+
+        {% if addr %}
+            <p>Your address is {{ addr }}</p>
+            <a href="{{ url_for('del_addr') }}">Delete this address</a>
         {% endif %}
 
 {% endblock %}

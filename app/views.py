@@ -1,13 +1,12 @@
 __author__ = 'SWEN356 Team 4'
 
 from app import *
-from app.forms import HighRiskTimeForm, AccelerateForm
+from app.forms import HighRiskTimeForm, AccelerateForm, AddressForm
 from flask_oauthlib.client import OAuth
-from flask import render_template, redirect, url_for, session, request, flash, jsonify, json
+from flask import render_template, redirect, url_for, session, request, flash, json
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime, time
-
-
+from datetime import datetime
+import requests
 
 
 
@@ -122,14 +121,17 @@ def user_config():
         .distinct(models.HighRiskTime.start_time).distinct(models.HighRiskTime.end_time).all()
 
     accel = db.session.query(models.Acceleration).filter_by(user_id=current_user.id).one_or_none()
+    addr = db.session.query(models.Address).filter_by(user_id=current_user.id).one_or_none()
 
     return render_template('config.html', form1=HighRiskTimeForm(),
-                           form2=AccelerateForm(), times=times, accel=accel,jsname="config.js")
+                           form2=AccelerateForm(), form3=AddressForm(),
+                           times=times, accel=accel, addr=addr, jsname="config.js")
 
 
 """
 High Risk Time form handler
 """
+
 
 @app.route('/hrt', methods=['POST'])
 @login_required
@@ -140,8 +142,6 @@ def hrt():
         start = datetime.strptime(form.start_time.data, "%H:%M")
         end = datetime.strptime(form.end_time.data, "%H:%M")
         time = db.session.query(models.HighRiskTime).filter_by(user=current_user).all()
-        #time = db.session.query(models.HighRiskTime).filter_by(user='Tim Smith').all()
-        #highrisk = models.HighRiskTime(start, end, 2)
         highrisk = models.HighRiskTime(start, end, current_user.id)
 
         # if this time interval isnt unique, add it to the db
@@ -262,4 +262,57 @@ Map page view
 @app.route('/map/<user_id>')
 @login_required
 def map_page(user_id):
-    return render_template('map.html', addlat=43.085419 , addlng=-77.662398)
+    key = "AIzaSyBp_559TLwKdvOGuvtaryHmolJnbBpOuk0" # google api key
+    user = models.User.query.filter_by(id=current_user.id).first()
+    flag = True if user.addr else False
+    address = "%s %s %s %s" % (user.addr.street, user.addr.city, user.addr.state, user.addr.zip) if user.addr else ""
+    url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&components=country:US&key=%s" % (address, key)
+
+    response = json.loads(requests.get(url).content)
+    addlat = response['results'][0]['geometry']['location']['lat']
+    addlng = response['results'][0]['geometry']['location']['lng']
+
+    return render_template('map.html', addr=flag, addlat=addlat , addlng=addlng)
+
+"""
+User address input
+"""
+
+
+@app.route('/address', methods=['POST'])
+@login_required
+def address():
+    form = AddressForm(request.form)
+    addr = models.User.query.filter_by(id=current_user.id).first().addr
+
+    if form.validate() and not addr:
+        print(form.zip.data)
+        new = models.Address(
+            form.addr.data,
+            form.city.data,
+            form.state.data,
+            form.zip.data,
+            current_user.id
+        )
+        db.session.add(new)
+        db.session.commit()
+        flash('Address added!')
+    else:
+        flash('You can only have one address.')
+
+    return redirect(url_for('user_config'))
+
+"""
+Address deletion
+"""
+
+
+@app.route('/address/delete/')
+@login_required
+def del_addr():
+    address = models.User.query.filter_by(id=current_user.id).first().addr
+    if address:
+        db.session.delete(address)
+        db.session.commit()
+        flash("Acceleration threshold deleted.")
+    return redirect(url_for('user_config'))

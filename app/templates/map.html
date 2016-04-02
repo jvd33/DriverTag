@@ -3,17 +3,21 @@
     <style type="text/css">
         html, body, #map { height: 100%; width:100%; margin: 0; padding: 0; }
     </style>
+    {% if addr %}
+        <div id="map"></div>
+            <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBp_559TLwKdvOGuvtaryHmolJnbBpOuk0&callback=initMap"
+            async defer></script>
+            <script>
+                var map;
+                function initMap() {
+                    map = new google.maps.Map(document.getElementById('map'), {
+                        center: {lat:{{addlat}}, lng:{{addlng}}},
+                        zoom: 13
+                    });
+                }
+            </script>
+    {% else %}
+    You need to add an address first!
+    {% endif %}
 
-    <div id="map"></div>
-        <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBp_559TLwKdvOGuvtaryHmolJnbBpOuk0&callback=initMap"
-        async defer></script>
-        <script>
-            var map;
-            function initMap() {
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: {lat:{{addlat}}, lng:{{addlng}}},
-                    zoom: 13
-                });
-            }
-        </script>
 {% endblock %}

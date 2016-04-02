@@ -32,6 +32,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(255))
     data = db.relationship('Data', backref='user',lazy='dynamic')
     accel = db.relationship('Acceleration', backref='accel', uselist=False)
+    addr = db.relationship('Address', backref='addr', uselist=False)
 
     def __init__(self, email, name):
         self.email = email
@@ -64,3 +65,22 @@ class Acceleration(db.Model):
         self.seconds = s
         self.user_id = user_id
         self.g = float((mph/s)) * .045585  # in gs!
+
+
+class Address(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'), unique=True)
+    street = db.Column(db.String(255))
+    city = db.Column(db.String(255))
+    state = db.Column(db.String(2))
+    zip = db.Column(db.String(5))
+
+    def __init__(self, a, c, s, z, id):
+        self.street = a
+        self.city = c
+        self.state = s
+        self.zip = z
+        self.user_id = id
+
+    def __str__(self):
+        return "%s %s %s %s" % (self.street, self.city, self.state, self.zip)

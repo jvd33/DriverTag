@@ -9,6 +9,9 @@ def validate_time(form, field):
     if bool(regex.match(str(field.data))) is False or field.data == "":
         raise validators.ValidationError("Time must be in format HH:MM")
 
+def validate_zip(form, field):
+    if len(field.data) != 5:
+        raise validators.ValidationError("Must be a valid zipcode.")
 
 class HighRiskTimeForm(Form):
     start_time = StringField(u'Risk starts at:',
@@ -16,6 +19,14 @@ class HighRiskTimeForm(Form):
     end_time = StringField(u'Risk ends at:',
                              [validate_time])
 
+
 class AccelerateForm(Form):
     delta_mph = DecimalField("Change in speed (mph):", [validators.required()])
     seconds = DecimalField("Over interval (seconds)", [validators.required()])
+
+
+class AddressForm(Form):
+    addr = StringField(u'Address:', [validators.required()])
+    city = StringField(u'City:', [validators.required()])
+    state = StringField(u'State:', [validators.required()])
+    zip = StringField(u'Zip Code:', [validators.required()])
