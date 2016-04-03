@@ -11,6 +11,11 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+#UNCOMMENT THIS IF YOU HAVE DATABASE PROBLEMS AND RUN BOTH RUN.PY AND SEEDS.PY AGAIN
+#db.engine.execute("drop schema if exists public cascade")
+#db.engine.execute("create schema public")
+
+
 from app import models
 
 db.create_all()

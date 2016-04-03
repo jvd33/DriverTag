@@ -30,3 +30,4 @@ class AddressForm(Form):
     city = StringField(u'City:', [validators.required()])
     state = StringField(u'State:', [validators.required()])
     zip = StringField(u'Zip Code:', [validators.required()])
+    radius = IntegerField('Dangerous area radius:', [validators.required()])

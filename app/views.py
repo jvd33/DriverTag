@@ -264,15 +264,17 @@ Map page view
 def map_page(user_id):
     key = "AIzaSyBp_559TLwKdvOGuvtaryHmolJnbBpOuk0" # google api key
     user = models.User.query.filter_by(id=current_user.id).first()
-    flag = True if user.addr else False
-    address = "%s %s %s %s" % (user.addr.street, user.addr.city, user.addr.state, user.addr.zip) if user.addr else ""
-    url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&components=country:US&key=%s" % (address, key)
+    if user.addr:
+        address = "%s %s %s %s" % (user.addr.street, user.addr.city, user.addr.state, user.addr.zip)
+        url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&components=country:US&key=%s" % (address, key)
 
-    response = json.loads(requests.get(url).content)
-    addlat = response['results'][0]['geometry']['location']['lat']
-    addlng = response['results'][0]['geometry']['location']['lng']
+        response = json.loads(requests.get(url).content)
+        addlat = response['results'][0]['geometry']['location']['lat']
+        addlng = response['results'][0]['geometry']['location']['lng']
+        r = user.addr.radius
 
-    return render_template('map.html', addr=flag, addlat=addlat , addlng=addlng)
+        return render_template('map.html', addr=True, addlat=addlat, addlng=addlng, radius=r)
+    return render_template('map.html', addr=False, addlat=0, addlng=0, radius=0)
 
 """
 User address input
@@ -292,6 +294,7 @@ def address():
             form.city.data,
             form.state.data,
             form.zip.data,
+            form.radius.data,
             current_user.id
         )
         db.session.add(new)

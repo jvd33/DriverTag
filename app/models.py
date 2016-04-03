@@ -74,13 +74,16 @@ class Address(db.Model):
     city = db.Column(db.String(255))
     state = db.Column(db.String(2))
     zip = db.Column(db.String(5))
+    radius = db.Column(db.INTEGER)
 
-    def __init__(self, a, c, s, z, id):
+    def __init__(self, a, c, s, z, r, id):
         self.street = a
         self.city = c
         self.state = s
         self.zip = z
+        self.radius = r
         self.user_id = id
 
     def __str__(self):
-        return "%s %s %s %s" % (self.street, self.city, self.state, self.zip)
+        return "%s %s %s %s with a danger radius of %d miles" \
+               % (self.street, self.city, self.state, self.zip, self.radius)
