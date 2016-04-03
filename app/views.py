@@ -288,7 +288,6 @@ def address():
     addr = models.User.query.filter_by(id=current_user.id).first().addr
 
     if form.validate() and not addr:
-        print(form.zip.data)
         new = models.Address(
             form.addr.data,
             form.city.data,
