@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from app.models import *
 from decimal import Decimal
 from datetime import *
+import logging
 import random
 
 app = Flask(__name__)
@@ -24,7 +25,7 @@ MINUMUMHOURS = 2
 ''' Maximum amount of hours '''
 MAXIMUMHOURS = 8
 ''' Number of days to generate data for'''
-NUMOFDAYS= 1
+NUMOFDAYS = 1
 ''' Min Number of minutes a high risk time can last '''
 MINHIGHRISKMINUTES = 10
 ''' Max Number of minutes a high risk time can last '''
@@ -114,7 +115,7 @@ def EndAccelEvent(time, currentUser, latitude, longitude):
     return dataPoint
 
 '''
-    This function modifies existing latitude and longitudes postions randomly to simulate that the user is moving
+    This function modifies existing latitude and longitudes positions randomly to simulate that the user is moving
 '''
 def GenerateGPSPoint(latitude, longitude):
 
@@ -141,7 +142,7 @@ def GenerateDay(timeStamp):
     ''' For each user generate data'''
     for currentUser in userArray:
 
-        print('Seeding data for user is', currentUser.name)
+        print('Seeding data for user', currentUser.name)
         random.seed(currentUser.name)
 
 
@@ -152,7 +153,7 @@ def GenerateDay(timeStamp):
         ''' Number of time steps to simulate '''
         numSteps = round((hours *60 *60) / SENSORINTERVAL)
 
-        print("Number of steps: ", numSteps)
+        logging.debug("Number of steps: ", numSteps)
 
         '''
             Need to generate the first Data point for the user
@@ -161,12 +162,8 @@ def GenerateDay(timeStamp):
             because the user is about to start their trip
         '''
 
-
         latitude = 43.084389
         longitude = -77.673769
-
-
-
 
         dataPoint = Data(0, 0, 0, latitude, longitude, timeStamp, currentUser)
         db.session.add(dataPoint)
@@ -176,18 +173,13 @@ def GenerateDay(timeStamp):
         critical = False
         swerve = False
 
-
-
         dataList = []
 
         ''' Generate each timeStep '''
         for num in range(numSteps-1):
             ''' Generate new data points for a user '''
 
-
-
-
-            #add time interval to the timestamp
+         #add time interval to the timestamp
             timeStamp = timeStamp + timedelta(0, SENSORINTERVAL)
 
             ChanceForHighRiskTimeCreation = random.random()
@@ -256,6 +248,8 @@ def GenerateData():
     timeStamp = datetime.today()
 
     for num in range(NUMOFDAYS):
+        print("\nSeeding data for Day {}\n".format(num+1))
+
         #increment the timeStamp by a day
         timeStamp = timeStamp.today() + timedelta(days=num)
         GenerateDay(timeStamp)
@@ -279,7 +273,11 @@ userArray = [user1, user2, user3, user4, user5, user6, user7, user8, user9]
 db.session.add_all(userArray)
 db.session.commit()
 
+seedingStartTime = datetime.now()
 GenerateData()
+seedingEndTime = datetime.now()
+
+print("\n\n Seeding Completed, it took ", (seedingEndTime-seedingStartTime).total_seconds())
 
 
 
