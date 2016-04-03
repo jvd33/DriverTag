@@ -13,21 +13,11 @@ db = SQLAlchemy(app)
 db.engine.execute('delete from data')
 db.engine.execute('delete from \"user\"')
 
+'''Constants for sensor data '''
 
-'''Create fake users'''
-user1 = User('1@test.com', 'Tim Smith')
-user2 = User('2@test.com', 'Matt Smith')
-user3 = User('3@test.com', 'Bob Smith')
-user4 = User('4@test.com', 'Johnny Smith')
-user5 = User('5@test.com', 'Rob Smith')
-user6 = User('6@test.com', 'Xavier Smith')
-user7 = User('7@test.com', 'Brandon Smith')
-user8 = User('8@test.com', 'Paul Smith')
-user9 = User('9@test.com', 'Brady Smith')
-userArray = [user1, user2, user3, user4, user5, user6, user7, user8, user9]
+'''Polling Rate in seconds'''
+SENSORINTERVAL = 1
 
-db.session.add_all(userArray)
-db.session.commit()
 
 
 '''
@@ -37,21 +27,24 @@ db.session.commit()
     2) Randomly either decreases or increases the data point
 
 '''
-def generateNormalDataPoint(time, currentUser):
+def generateNormalDataPoint(time, currentUser , latitude, longitude):
 
     '''Generate random acceleration changes for x,y,z '''
     xDelta = Decimal(random.uniform(-.22,.22))
     yDelta = Decimal(random.uniform(-.07,.07))
     zDelta = Decimal(random.uniform(-.11,.11))
 
-    dataPoint = Data( xDelta, yDelta, zDelta, time, currentUser)
+    #generate new gps coordinates
+    latitude,longitude = generateGPSPoint(latitude, longitude)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, latitude, longitude, time, currentUser)
     return dataPoint
 
 '''
     This Function generates a datapoint for the start of a Accel event
 '''
 
-def startAccelEvent(time, currentUser,swerve):
+def startAccelEvent(time, currentUser,swerve, latitude, longitude):
 
 
     ''' Generate Either Negative (braking) or Positive X datapoint '''
@@ -71,37 +64,69 @@ def startAccelEvent(time, currentUser,swerve):
 
     yDelta =  random.uniform(-.05,.05)
 
-    dataPoint = Data( xDelta, yDelta, zDelta, time, currentUser)
+    #generate new gps coordinates
+    latitude,longitude = generateGPSPoint(latitude, longitude)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, latitude, longitude, time, currentUser)
 
     return dataPoint
 
-def continueAccelEvent(time, previousX,previousY,previousZ, currentUser):
+def continueAccelEvent(time, previousX,previousY,previousZ, currentUser, latitude, longitude):
 
     '''Generate random acceleration changes for x,y,z '''
     xDelta = Decimal(previousX) + Decimal(random.uniform(-.12,.12))
     yDelta = Decimal(previousY) + Decimal(random.uniform(-.05,.05))
     zDelta = Decimal(previousZ) + Decimal(random.uniform(-.09,.09))
 
-    dataPoint = Data( xDelta, yDelta, zDelta, time,  currentUser)
+    #generate new gps coordinates
+    latitude,longitude = generateGPSPoint(latitude, longitude)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, latitude, longitude, time,  currentUser)
 
     return dataPoint
 
 ''' Generate a datapoint for the end of an acceleration '''
-def endAccelEvent(time, currentUser):
+def endAccelEvent(time, currentUser, latitude, longitude):
 
     '''Generate random acceleration changes for x,y,z '''
     xDelta = random.uniform(-.10,.10)
     yDelta = random.uniform(-.05,.05)
     zDelta = random.uniform(-.09,.09)
 
-    dataPoint = Data( xDelta, yDelta, zDelta, time, currentUser)
+    #generate new gps coordinates
+    latitude,longitude = generateGPSPoint(latitude, longitude)
+
+    dataPoint = Data( xDelta, yDelta, zDelta, latitude, longitude, time, currentUser)
     return dataPoint
 
+def generateGPSPoint(latitude, longitude):
 
-'''Constants for sensor data '''
+    latitude = round((Decimal(latitude) + Decimal(random.uniform(-.00005 , .00005))), 6)
+    longitude = round((Decimal(longitude) + Decimal(random.uniform(-.00005 , .00005))), 6)
 
-'''Polling Rate in seconds'''
-SensorInterval = 1
+    return latitude,longitude
+
+
+'''Create fake users'''
+user1 = User('1@test.com', 'Tim Smith')
+user2 = User('2@test.com', 'Matt Smith')
+user3 = User('3@test.com', 'Bob Smith')
+user4 = User('4@test.com', 'Johnny Smith')
+user5 = User('5@test.com', 'Rob Smith')
+user6 = User('6@test.com', 'Xavier Smith')
+user7 = User('7@test.com', 'Brandon Smith')
+user8 = User('8@test.com', 'Paul Smith')
+user9 = User('9@test.com', 'Brady Smith')
+userArray = [user1, user2, user3, user4, user5, user6, user7, user8, user9]
+
+db.session.add_all(userArray)
+db.session.commit()
+
+
+
+
+
+
 
 
 ''' For each user generate data'''
@@ -117,7 +142,7 @@ for currentUser in userArray:
     hours = random.uniform(2,8)
 
     ''' Number of time steps to simulate '''
-    numSteps = round((hours *60 *60)/SensorInterval)
+    numSteps = round((hours *60 *60) / SENSORINTERVAL)
 
     print("Number of steps: ", numSteps)
 
@@ -131,8 +156,13 @@ for currentUser in userArray:
     #just get the current time which we will increment from for the driver
     timeStamp = datetime.now()
 
+    latitude = 43.084389
+    longitude = -77.673769
 
-    dataPoint = Data(0, 0, 0, timeStamp, currentUser)
+
+
+
+    dataPoint = Data(0, 0, 0, latitude, longitude, timeStamp, currentUser)
     db.session.add(dataPoint)
     db.session.commit()
 
@@ -149,7 +179,7 @@ for currentUser in userArray:
         ''' Generate new data points for a user '''
 
         #add time interval to the timestamp
-        timeStamp = timeStamp + timedelta(0,SensorInterval)
+        timeStamp = timeStamp + timedelta(0, SENSORINTERVAL)
 
 
         chanceToLive = round(random.random(),4)
@@ -159,7 +189,7 @@ for currentUser in userArray:
             ''' Reduce the time left for the Acceleration '''
             timeLeftAccel-=1
             ''' Generate DataPoint '''
-            dataPoint = continueAccelEvent(timeStamp, dataPoint.x_accelorometer,dataPoint.y_accelorometer,dataPoint.z_accelorometer,currentUser)
+            dataPoint = continueAccelEvent(timeStamp, dataPoint.x_accelorometer, dataPoint.y_accelorometer, dataPoint.z_accelorometer, currentUser,latitude, longitude)
 
         # Start Accel Event
         elif (chanceToLive < .013) :
@@ -175,23 +205,20 @@ for currentUser in userArray:
             timeLeftAccel = random.randint(1,4)
 
             ''' Generate DataPoint '''
-            dataPoint = startAccelEvent(timeStamp, currentUser,swerve)
+            dataPoint = startAccelEvent(timeStamp, currentUser, swerve, latitude, longitude)
 
         # End of Accel Event
         elif timeLeftAccel < 0 :
             timeLeftAccel = 0
             critical = False
             swerve = False
-            dataPoint = endAccelEvent(timeStamp, currentUser)
+            dataPoint = endAccelEvent(timeStamp, currentUser, latitude, longitude)
 
         # Normal Driving
         else:
-            dataPoint = generateNormalDataPoint(timeStamp, currentUser)
+            dataPoint = generateNormalDataPoint(timeStamp, currentUser, latitude, longitude)
 
-
-
-
-        ''' We may add the array instead of each individual dataPoint '''
+        ''' We add to the array each individual dataPoint '''
         dataList.append(dataPoint)
 
     ''' Bulk Insert '''
