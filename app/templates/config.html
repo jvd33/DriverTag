@@ -15,14 +15,14 @@
     {% endwith %}
 <table>
     <tr>
-        <td valign="top">
+        <td valign="top" style="height:320px">
             <div id="tabs">
               <ul>
                 <li><a href="#tabs-1" onclick="showdiv('times');">High Risk Times</a></li>
                 <li><a href="#tabs-2" onclick="showdiv('accel');">Acceleration Limits</a></li>
                 <li><a href="#tabs-3" onclick="showdiv('addr_div');">Address</a></li>
               </ul>
-                <div id="tabs-1" style="height:310px">
+                <div id="tabs-1" style="height:100%">
                     <p>Enter new risky driving times here</p>
                     {% from "_formhelpers.html" import render_field %}
                     <form method="POST" action="{{ url_for('hrt') }}">
@@ -33,7 +33,7 @@
                         <p><input type=submit value="Submit"></p>
                     </form>
                 </div>
-                <div id="tabs-2" style="height:310px">
+                <div id="tabs-2" style="height:100%">
                     <form method="POST" action="{{ url_for('accel') }}">
                         <dl>
                             {{ render_field(form2.delta_mph) }}
@@ -42,7 +42,7 @@
                         <p><input type=submit value="Submit"></p>
                     </form>
                 </div>
-                <div id="tabs-3"  style="height:310px">
+                <div id="tabs-3"  style="height:100%">
                     <form method="POST" action="{{ url_for('address') }}">
                         <dl>
                             {{ render_field(form3.addr) }}
@@ -57,28 +57,34 @@
             </div>
         </td>
         <td>
-            <div id="times" class="results">
+            <div id="times" class="results dbcontainer" style="width:400px; height:320px">
             {% if times %}
-                <p>Your High Risk Times:</p>
-
+                <p style="align-content:center">High Risk Times</p>
+                <table class="listframe" style="width:100%; overflow-y:auto">
+                <tr>
+                    <td style="width:40%">Start Time</td>
+                    <td style="width:40%">End Time</td>
+                    <td style="width:20%">Tools</td>
+                </tr>
                 {% for time in times %}
-                        <p>High Risk Time Starts: {{ time.start_time }}</p>
-                        <p>High Risk Time Ends: {{ time.end_time }}</p>
-                        <a href="{{ url_for('delete_hrt', hrt_id=time.id) }}">Delete this entry</a>
-
-
-                        </form>
-                    <br></br>
+                    <tr class="{{ loop.cycle('listodd', 'listeven') }}">
+                        <td>{{ time.start_time|replace("1900-01-01 ","") }}</td>
+                        <td>{{ time.end_time|replace("1900-01-01 ","" )}}</td>
+                        <td><a href="{{ url_for('delete_hrt', hrt_id=time.id) }}"><img title="delete" src="{{ url_for('static', filename='images/delete.png') }}"></a></td>
+                    </tr>
                 {% endfor %}
+                </table>
+            {% else %}
+                <p> No high risk times entered.</p>
             {% endif %}
             </div>
-            <div id="accel" class="results">
+            <div id="accel" class="results dbcontainer" style="width:400px; height:320px">
             {% if accel %}
                 <p>Your acceleration threshold is +/- {{ accel.g }} gs</p>
                 <a href="{{ url_for('del_accel') }}">Delete your acceleration threshold</a>
             {% endif %}
             </div>
-            <div id="addr_div" class="results">
+            <div id="addr_div" class="results dbcontainer" style="width:400px; height:320px">
             {% if addr %}
                 <p>Your address is {{ addr }}</p>
                 <a href="{{ url_for('del_addr') }}">Delete this address</a>
