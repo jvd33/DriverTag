@@ -71,7 +71,8 @@ A {
 /* Structure ---------------------------------*/
 
 #wrapper {
-  padding: 0px 0px 100px; 
+  padding: 0px 0px 100px;
+  height: 100%;
   width: 100%;
   min-height: 100%;
   position: relative;
@@ -111,15 +112,21 @@ A {
 #page {
   margin-left: 105px;
   margin-top: 75px;
+  height: 100%;
+  width: 100%;
 }
 
 #main {
   padding-left: 10px;
   padding-right: 10px;
+  height: 100%;
+  width: 100%;
 }
 
 #body {
   padding-bottom: 50px;
+  height: 100%;
+  width: 100%;
 }
 
 #footer {
