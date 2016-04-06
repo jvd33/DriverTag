@@ -1,70 +1,91 @@
 {% extends "layout.html" %}
 {% block body %}
+<p class="head14">Add or modify user settings.</p>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
-            {% for message in messages %}
-                {{ message }}
-            {% endfor %}
+            <div id="popup" title="Message">
+                <p>
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </p>
+            </div>
+            <script>$( "#popup" ).dialog();</script>
         {% endif %}
     {% endwith %}
-
-
-    <p>Enter new risky driving times here</p>
-    {% from "_formhelpers.html" import render_field %}
-    <form method="POST" action="{{ url_for('hrt') }}">
-        <dl>
-            {{ render_field(form1.start_time) }}
-            {{ render_field(form1.end_time) }}
-        </dl>
-
-        <p><input type=submit value="Submit"></p>
-    </form>
-
-    <form method="POST" action="{{ url_for('accel') }}">
-        <dl>
-            {{ render_field(form2.delta_mph) }}
-            {{ render_field(form2.seconds) }}
-        </dl>
-
-        <p><input type=submit value="Submit"></p>
-    </form>
-
-    <form method="POST" action="{{ url_for('address') }}">
-        <dl>
-            {{ render_field(form3.addr) }}
-            {{ render_field(form3.city) }}
-            {{ render_field(form3.state) }}
-            {{ render_field(form3.zip) }}
-            {{ render_field(form3.radius) }}
-        </dl>
-
-        <p><input type=submit value="Submit"></p>
-    </form>
-
-    <a href="/home">Back</a>
-
-        {% if times %}
-            <p>Your High Risk Times:</p>
-
-            {% for time in times %}
-                    <p>High Risk Time Starts: {{ time.start_time }}</p>
-                    <p>High Risk Time Ends: {{ time.end_time }}</p>
-                    <a href="{{ url_for('delete_hrt', hrt_id=time.id) }}">Delete this entry</a>
-
-
+<table>
+    <tr>
+        <td valign="top">
+            <div id="tabs">
+              <ul>
+                <li><a href="#tabs-1" onclick="showdiv('times');">High Risk Times</a></li>
+                <li><a href="#tabs-2" onclick="showdiv('accel');">Acceleration Limits</a></li>
+                <li><a href="#tabs-3" onclick="showdiv('addr_div');">Address</a></li>
+              </ul>
+                <div id="tabs-1" style="height:310px">
+                    <p>Enter new risky driving times here</p>
+                    {% from "_formhelpers.html" import render_field %}
+                    <form method="POST" action="{{ url_for('hrt') }}">
+                        <dl>
+                            {{ render_field(form1.start_time) }}
+                            {{ render_field(form1.end_time) }}
+                        </dl>
+                        <p><input type=submit value="Submit"></p>
                     </form>
-                <br></br>
-            {% endfor %}
-        {% endif %}
-        {% if accel %}
-            <p>Your acceleration threshold is +/- {{ accel.g }} gs</p>
-            <a href="{{ url_for('del_accel') }}">Delete your acceleration threshold</a>
-        {% endif %}
+                </div>
+                <div id="tabs-2" style="height:310px">
+                    <form method="POST" action="{{ url_for('accel') }}">
+                        <dl>
+                            {{ render_field(form2.delta_mph) }}
+                            {{ render_field(form2.seconds) }}
+                        </dl>
+                        <p><input type=submit value="Submit"></p>
+                    </form>
+                </div>
+                <div id="tabs-3"  style="height:310px">
+                    <form method="POST" action="{{ url_for('address') }}">
+                        <dl>
+                            {{ render_field(form3.addr) }}
+                            {{ render_field(form3.city) }}
+                            {{ render_field(form3.state) }}
+                            {{ render_field(form3.zip) }}
+                            {{ render_field(form3.radius) }}
+                        </dl>
+                        <p><input type=submit value="Submit"></p>
+                    </form>
+                </div>
+            </div>
+        </td>
+        <td>
+            <div id="times" class="results">
+            {% if times %}
+                <p>Your High Risk Times:</p>
 
-        {% if addr %}
-            <p>Your address is {{ addr }}</p>
-            <a href="{{ url_for('del_addr') }}">Delete this address</a>
-        {% endif %}
+                {% for time in times %}
+                        <p>High Risk Time Starts: {{ time.start_time }}</p>
+                        <p>High Risk Time Ends: {{ time.end_time }}</p>
+                        <a href="{{ url_for('delete_hrt', hrt_id=time.id) }}">Delete this entry</a>
 
+
+                        </form>
+                    <br></br>
+                {% endfor %}
+            {% endif %}
+            </div>
+            <div id="accel" class="results">
+            {% if accel %}
+                <p>Your acceleration threshold is +/- {{ accel.g }} gs</p>
+                <a href="{{ url_for('del_accel') }}">Delete your acceleration threshold</a>
+            {% endif %}
+            </div>
+            <div id="addr_div" class="results">
+            {% if addr %}
+                <p>Your address is {{ addr }}</p>
+                <a href="{{ url_for('del_addr') }}">Delete this address</a>
+            {% endif %}
+            </div>
+        </td>
+    </tr>
+</table>
 {% endblock %}
 

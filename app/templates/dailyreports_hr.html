@@ -1,13 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <title>Daily Report</title>
-</head>
-
-<body>
-    <a href="/home">Back</a>
+{% extends "layout.html" %}
+{%  block body %}
 
         {% if datas %}
             <p>Your Data for {{ datas[0].timestamp.strftime("%A, %d. %B %Y ") }}</p>
@@ -40,9 +32,5 @@
             <p>You have no Data</p>
 
         {% endif %}
-
-
-</body>
-
-</html>
+{% endblock %}
 
