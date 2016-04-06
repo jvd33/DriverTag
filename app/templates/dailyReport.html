@@ -12,7 +12,8 @@
         $(function () {
             $('#chart').highcharts({
                 chart: {
-                    type: 'line'
+                    type: 'line',
+                    zoomType: 'x'
                 },
                 title: {
                     text: 'Daily Data'
@@ -34,10 +35,10 @@
                 series: [{
                     name: 'X-accel',
                     data: {{ x_accel|tojson|safe }}
-                }]/*, {
-                    name: 'Y-accel',
-                    data: {{ y_accel|tojson|safe }}
-                }]*/
+                }, {
+                    name: 'Z-accel',
+                    data: {{ z_accel|tojson|safe }}
+                }]
             });
         });
     </script>
