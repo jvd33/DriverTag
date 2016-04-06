@@ -201,21 +201,46 @@ def daily_report(user_id):
     if user_id and fake_user:
         dataList = fake_user.data.all()
 
+        counter = 0
+        avg_xaccelorometer = 0
+        avg_yaccelorometer = 0
+        avg_zaccelorometer = 0
+
         #format the acceleration down to 6 decimal places
         for data in dataList:
+            avg_xaccelorometer += data.x_accelorometer
+            avg_yaccelorometer += data.y_accelorometer
+            avg_zaccelorometer += data.y_accelorometer
+
+            #we will get the average of 50 points of data
+            if counter % 25 == 0:
+                avg_xaccelorometer = round(avg_xaccelorometer/50,6)
+                avg_yaccelorometer = round(avg_yaccelorometer/50,6)
+                avg_zaccelorometer = round(avg_zaccelorometer/50,6)
+
+                x_accel.append(avg_xaccelorometer)
+                y_accel.append(avg_yaccelorometer)
+                z_accel.append(avg_zaccelorometer)
+
+                timestamps.append(str(data.timestamp.hour) + ":" + str(data.timestamp.minute) + ":" + str(data.timestamp.second))
+                #timestamps.append(str(data.timestamp))
+
+                #reset averages for next iteration
+                avg_xaccelorometer = 0
+                avg_yaccelorometer = 0
+                avg_zaccelorometer = 0
+
+            counter += 1
             data.x_accelorometer = round(data.x_accelorometer,6)
             data.y_accelorometer = round(data.y_accelorometer,6)
             data.z_accelorometer = round(data.z_accelorometer,6)
-            x_accel.append(data.x_accelorometer)
-            y_accel.append(data.y_accelorometer)
-            z_accel.append(data.z_accelorometer)
-            timestamps.append(str(data.timestamp))
 
         xaccel_string = [float(i) for i in x_accel]
-        points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
-        yaccel_string = [str(i) for i in y_accel]
+        x_points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
+        zaccel_string = [float(i) for i in z_accel]
+        z_points = list(zip(timestamps, zaccel_string))
 
-        return render_template('dailyReport.html', datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
+        return render_template('dailyReport.html', datas=dataList ,x_accel=x_points, z_accel=z_points, timestamps=timestamps)
     return redirect(url_for('home'))
 
 """
