@@ -18,10 +18,12 @@ class Data(db.Model):
      user_id = db.Column(db.INTEGER, db.ForeignKey('user.id'))
      '''user = db.relation('User', backref=db.backref('data',lazy='dynamic'))'''
 
-     def __init__(self, xaccel,yaccel,zaccel, time, user):
+     def __init__(self, xaccel,yaccel,zaccel, latitude, longitude, time, user):
          self.x_accelorometer = xaccel
          self.y_accelorometer = yaccel
          self.z_accelorometer = zaccel
+         self.latitude = latitude
+         self.longitude = longitude
          self.timestamp = time
          self.user_id = user.id
 
