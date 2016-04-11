@@ -5,10 +5,11 @@ from app.forms import HighRiskTimeForm, AccelerateForm, AddressForm
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, json
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
-import requests
+from datetime import datetime, timedelta
 
-
+import forecastio
+from geopy.geocoders import Nominatim
+import decimal
 
 """
 Defines the OAuth object needed for logging in via Facebook/Google (NYI)
@@ -188,18 +189,55 @@ def delete_hrt(hrt_id):
         flash("High risk time interval deleted.")
     return redirect(url_for('user_config'))
 
+def getThresholds(user_idd, stp):
+	ad = models.Address.query.filter_by(id=user_idd).first()
+	#addr = ad.city+", "+ad.state+ad.zip
+	addr = "Rochester, NY 14624"
+	geoloc = Nominatim()
+	loc = geoloc.geocode(addr)
+	acc = models.Acceleration.query.filter_by(id=user_idd).first().g
+	key = "f6222ba72b3b9a417a604a355d598f66"
+	forecast = forecastio.load_forecast(key,loc.latitude,loc.longitude,stp)
+	hr = forecast.hourly()
+	dictionary = {}
+	for h in hr.data:
+		if "rain" in h.icon:
+			dictionary[h.time.hour]=acc - (acc*decimal.Decimal(.3))
+		elif "snow" in h.icon or "sleet" in h.icon:
+			dictionary[h.time.hour]= acc - (acc*decimal.Decimal(.5))
+		elif "fog" in h.icon:
+			dictionary[h.time.hour]= acc - (acc*decimal.Decimal(.6))
+		elif "hail" in h.icon or "thunder" in h.icon or "tornado" in h.icon:
+			dictionary[h.time.hour] = acc - (acc*decimal.Decimal(.8))
+		else:
+			dictionary[h.time.hour] = acc
+	return dictionary
 
+def getDifferences(user_idd, dicti, data, tm):
+	usr = models.User.query.filter_by(id=2).first()
+	ts = []
+	
+	new = []
+	for d in data:
+		ts.append(str(d.timestamp))
+		if abs(d.x_accelorometer) > abs(dicti[d.timestamp.hour]):
+			new.append(round(abs(abs(d.x_accelorometer)-abs(dicti[d.timestamp.hour])),6))
+		else:
+			new.append(0.0)
+	xaccel_string = [float(i) for i in new]
+	points = list(zip(ts, xaccel_string))
+	return points
+			
+		
 @app.route('/daily_report/<user_id>')
 @login_required
 def daily_report(user_id):
-
-    fake_user = models.User.query.filter_by(id=user_id).first()
-
+    fake_user = models.User.query.filter_by(id=2).first()
     x_accel = []
     y_accel = []
     z_accel = []
     timestamps = []
-
+    ts = datetime(1900,12,22,11,30,59)
     if user_id and fake_user:
         dataList = fake_user.data.all()
 
@@ -212,12 +250,15 @@ def daily_report(user_id):
             y_accel.append(data.y_accelorometer)
             z_accel.append(data.z_accelorometer)
             timestamps.append(str(data.timestamp))
-
+            if data.timestamp > ts:
+                ts = data.timestamp
+        dicti = getThresholds(user_id,ts-timedelta(hours=24))
+        ll = getDifferences(user_id,dicti,dataList,ts-timedelta(hours=24))
         xaccel_string = [float(i) for i in x_accel]
         points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
         yaccel_string = [str(i) for i in y_accel]
 
-        return render_template('dailyReport.html', datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
+        return render_template('dailyReport.html', maxx=models.Acceleration.query.filter_by(id=user_id).first().g,lst = ll, datas=dataList ,x_accel=points, y_accel=yaccel_string, z_accel=z_accel, timestamps=timestamps)
     return redirect(url_for('home'))
 
 """
