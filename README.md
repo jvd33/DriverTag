@@ -9,11 +9,11 @@ Linux operating system (Works on Windows but not supported in this readme)
 
 
 1. **pip install python3-venv** if not already installed
-2. Navigate to the root project directory */DriverTag/ and create the virtual environment with **pyvenv venv**
+2. Navigate to the root project directory */DriverTag/* and create the virtual environment with **pyvenv venv**
 3. **source venv/bin/activate** to switch to the virtual environment
 4. **pip install -r requirements.txt** to install the required Python libraries
 5. (Optional) **python seeds.py** to seed the database with test data
-5. **python run.py**
+5. **python run.py** to start the server
 6. Navigate to localhost:5000
 
 
