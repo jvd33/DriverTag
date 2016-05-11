@@ -292,13 +292,14 @@ def map_page(user_id):
     if user.addr:
         address = "%s %s %s %s" % (user.addr.street, user.addr.city, user.addr.state, user.addr.zip)
         url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&components=country:US&key=%s" % (address, key)
-
+        data = models.Data.query.filter_by(user_id=user_id).all()
         response = json.loads(requests.get(url).content)
         addlat = response['results'][0]['geometry']['location']['lat']
         addlng = response['results'][0]['geometry']['location']['lng']
         r = user.addr.radius
+        path = [(d.latitude, d.longitude) for d in data]
 
-        return render_template('map.html', addr=True, addlat=addlat, addlng=addlng, radius=r)
+        return render_template('map.html', addr=True, addlat=addlat, addlng=addlng, radius=r, path=path)
     return render_template('map.html', addr=False, addlat=0, addlng=0, radius=0)
 
 """
