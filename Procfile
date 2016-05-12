@@ -1,2 +1,2 @@
 myworker: python seeds.py 
-web: python run.py
+web: gunicorn run:app --log-file - 
