@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 {% block body %}
+    <h1 align="center">Today's Route</h1>
     <style type="text/css">
-        html, body, #map { height: 100%; width:100%; margin: 0; padding: 0; }
+        html, body, #map { height: 100%; width:100%; }
     </style>
     {% if addr %}
         <div id="map"></div>
@@ -35,6 +36,17 @@
                         fillColor: '#0000FF',
                         strokeOpacity: '0.0'
                     });
+                    start = new google.maps.Marker({
+                        map: map,
+                        position: coords[0],
+                        title: 'Start of Route'
+                    });
+
+                    end = new google.maps.Marker({
+                        map:map,
+                        position: coords[-1],
+                        title: 'End of Route'
+                    })
 
                     path = new google.maps.Polyline({
                         path: coords,
