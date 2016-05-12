@@ -371,9 +371,13 @@ Weather functions
 """
 
 def get_weather_data(stp):
+    try:
+        user = models.User.query.filter_by(id=2).first()
+        addr = user.addr
+    except AttributeError:
+        addr = models.Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "1")
 
-    user = models.User.query.filter_by(id=2).first()
-    addr = "%s, %s %s" % (user.addr.city, user.addr.state, user.addr.zip)
+    addr = "%s, %s %s" % (addr.city, addr.state, addr.zip)
     geoloc = Nominatim()
     loc = geoloc.geocode(addr)
     key = "f6222ba72b3b9a417a604a355d598f66"
