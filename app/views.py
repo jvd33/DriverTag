@@ -371,7 +371,8 @@ Weather functions
 """
 
 def get_weather_data(stp):
-    user = models.User.query.filter_by(id=current_user.id).first()
+
+    user = models.User.query.filter_by(id=2).first()
     addr = "%s, %s %s" % (user.addr.city, user.addr.state, user.addr.zip)
     geoloc = Nominatim()
     loc = geoloc.geocode(addr)

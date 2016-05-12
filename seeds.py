@@ -269,6 +269,12 @@ def GenerateData():
 user1 = User('1@test.com', 'Tim Smith')
 user2 = User('2@test.com', 'Matt Smith')
 user3 = User('3@test.com', 'Bob Smith')
+addr = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "1")
+addr2 = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "2")
+addr3 = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "3")
+user1.addr = addr
+user2.addr = addr2
+user3.addr = addr3
 userArray = [user1, user2, user3]
 
 db.session.add_all(userArray)
