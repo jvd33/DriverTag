@@ -1,1 +1,2 @@
-web: python seeds.py python run.py
+worker: 
+web: gunicorn app.wsgi

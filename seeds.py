@@ -11,18 +11,18 @@ import os
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+try:
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+except KeyError:
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgresl@localhost/drivertag'
 db = SQLAlchemy(app)
 
 ''' Clean out data '''
 meta = MetaData()
 
-with contextlib.closing(db.engine.connect()) as con:
-    trans = con.begin()
-    for table in reversed(meta.sorted_tables):
-        con.execute(table.delete())
-    trans.commit()
-
+db.reflect()
+db.drop_all()
+db.create_all()
 '''Constants for sensor data '''
 
 '''Polling Rate in seconds'''
@@ -269,13 +269,7 @@ def GenerateData():
 user1 = User('1@test.com', 'Tim Smith')
 user2 = User('2@test.com', 'Matt Smith')
 user3 = User('3@test.com', 'Bob Smith')
-user4 = User('4@test.com', 'Johnny Smith')
-user5 = User('5@test.com', 'Rob Smith')
-user6 = User('6@test.com', 'Xavier Smith')
-user7 = User('7@test.com', 'Brandon Smith')
-user8 = User('8@test.com', 'Paul Smith')
-user9 = User('9@test.com', 'Brady Smith')
-userArray = [user1, user2, user3, user4, user5, user6, user7, user8, user9]
+userArray = [user1, user2, user3]
 
 db.session.add_all(userArray)
 db.session.commit()
