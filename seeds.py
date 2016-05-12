@@ -1,20 +1,26 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import MetaData
+import contextlib
 from app.models import *
 from decimal import Decimal
 from datetime import *
 import logging
 import random
 
+
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgresl@localhost/drivertag'
 db = SQLAlchemy(app)
 
 ''' Clean out data '''
-db.engine.execute('delete from high_risk_time')
-db.engine.execute('delete from acceleration')
-db.engine.execute('delete from data')
-db.engine.execute('delete from \"user\"')
+meta = MetaData()
+
+with contextlib.closing(db.engine.connect()) as con:
+    trans = con.begin()
+    for table in reversed(meta.sorted_tables):
+        con.execute(table.delete())
+    trans.commit()
 
 '''Constants for sensor data '''
 
