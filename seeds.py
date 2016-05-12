@@ -119,8 +119,8 @@ def EndAccelEvent(time, currentUser, latitude, longitude):
 '''
 def GenerateGPSPoint(latitude, longitude):
 
-    latitude = round((Decimal(latitude) + Decimal(random.uniform(-.00005 , .00005))), 6)
-    longitude = round((Decimal(longitude) + Decimal(random.uniform(-.00005 , .00005))), 6)
+    latitude = round((Decimal(latitude) + Decimal(random.uniform(-.005, .005))), 6)
+    longitude = round((Decimal(longitude) + Decimal(random.uniform(-.005, .005))), 6)
 
     return latitude, longitude
 

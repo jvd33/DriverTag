@@ -85,6 +85,7 @@ A {
   width: 100%;
   background-color: #005596;
   display: table;
+  z-index: 3;
 }
 
 #nav {
@@ -110,8 +111,8 @@ A {
 
 
 #page {
-  margin-left: 105px;
-  margin-top: 75px;
+  padding-left: 105px;
+  padding-top: 75px;
   height: 100%;
   width: 100%;
 }
@@ -121,6 +122,8 @@ A {
   padding-right: 10px;
   height: 100%;
   width: 100%;
+  position: relative;
+  z-index: 0;
 }
 
 #body {
@@ -217,13 +220,12 @@ A {
 
 #reportmenu {
   display: none;
-  position: relative;
+  position: absolute;
   left: 80px;
-  z-index:1;
 }
 
 .sidebarmenu {
-  position: absolute;
+  position: relative;
   background-color: #005596;
   min-width: 90px;
   width: 100%;
@@ -233,6 +235,7 @@ A {
 .sidebarnav {
   background-color: #FFFFFF;
   padding: 2px;
+  position: relative;
 }
 
 .sidebarnav p {
@@ -256,6 +259,7 @@ A {
   padding-top: 10px;
   padding-bottom: 10px;
   position: relative;
+  z-index:1;
 }
 
 .leftnav:hover {

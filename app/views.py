@@ -5,7 +5,11 @@ from app.forms import HighRiskTimeForm, AccelerateForm, AddressForm
 from flask_oauthlib.client import OAuth
 from flask import render_template, redirect, url_for, session, request, flash, json
 from flask_login import login_user, login_required, logout_user, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
+import forecastio
+from geopy.geocoders import Nominatim
+import decimal
+from sqlalchemy import asc
 import requests
 
 
@@ -168,6 +172,9 @@ def high_risk_report(id_user):
     if id_user and user:
         dataList = user.data.all()
         for data in dataList:
+            data.x_accelorometer = round(data.x_accelorometer,6)
+            data.y_accelorometer = round(data.y_accelorometer,6)
+            data.z_accelorometer = round(data.z_accelorometer,6)
             for t in times:
                 if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
                     user_info.append(data)
@@ -193,17 +200,22 @@ def delete_hrt(hrt_id):
 @login_required
 def daily_report(user_id):
 
-    fake_user = models.User.query.filter_by(id=user_id).first()
+    fake_user = models.User.query.filter_by(id=2).first()
+    obj = fake_user.data.first().timestamp
+    weather_data = get_weather_data(obj)
 
     x_accel = []
     y_accel = []
     z_accel = []
     timestamps = []
+    ll = []
+    ts = datetime(1900,12,22,11,30,59)
 
     if user_id and fake_user:
-        dataList = fake_user.data.all()
+        dataList = fake_user.data.from_self().\
+            filter(models.Data.timestamp < (obj+timedelta(days=1))).limit(2000).all()
 
-        counter = 0
+        counter = 1
         avg_xaccelorometer = 0
         avg_yaccelorometer = 0
         avg_zaccelorometer = 0
@@ -214,18 +226,22 @@ def daily_report(user_id):
             avg_yaccelorometer += data.y_accelorometer
             avg_zaccelorometer += data.y_accelorometer
 
-            #we will get the average of 50 points of data
-            if counter % 25 == 0:
-                avg_xaccelorometer = round(avg_xaccelorometer/50,6)
-                avg_yaccelorometer = round(avg_yaccelorometer/50,6)
-                avg_zaccelorometer = round(avg_zaccelorometer/50,6)
+            #we will get the average of 25 points of data
+            if counter % 10 == 0:
+                avg_xaccelorometer = round(avg_xaccelorometer/10,6)
+                avg_yaccelorometer = round(avg_yaccelorometer/10,6)
+                avg_zaccelorometer = round(avg_zaccelorometer/10,6)
 
                 x_accel.append(avg_xaccelorometer)
                 y_accel.append(avg_yaccelorometer)
                 z_accel.append(avg_zaccelorometer)
 
                 timestamps.append(str(data.timestamp.hour) + ":" + str(data.timestamp.minute) + ":" + str(data.timestamp.second))
-                #timestamps.append(str(data.timestamp))
+                if data.timestamp > ts:
+                    ts = data.timestamp
+                    dicti = get_thresholds(user_id, weather_data)
+                    ll = get_differences(user_id, dicti, dataList, ts-timedelta(hours=24))
+                timestamps.append(str(data.timestamp))
 
                 #reset averages for next iteration
                 avg_xaccelorometer = 0
@@ -239,10 +255,15 @@ def daily_report(user_id):
 
         xaccel_string = [float(i) for i in x_accel]
         x_points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
+        yaccel_string = [float(i) for i in y_accel]
+        y_points = list(zip(timestamps, yaccel_string))
         zaccel_string = [float(i) for i in z_accel]
         z_points = list(zip(timestamps, zaccel_string))
 
-        return render_template('dailyReport.html', datas=dataList ,x_accel=x_points, z_accel=z_points, timestamps=timestamps)
+        return render_template('dailyReport.html',
+                               maxx=models.Acceleration.query.filter_by(id=user_id).first().g,
+                               lst=ll, datas=dataList, x_accel=x_points, y_accel=y_points,
+                               z_accel=z_points, timestamps=timestamps)
     return redirect(url_for('home'))
 
 """
@@ -344,3 +365,51 @@ def del_addr():
         db.session.commit()
         flash("Acceleration threshold deleted.")
     return redirect(url_for('user_config'))
+
+"""
+Weather functions
+"""
+
+def get_weather_data(stp):
+    user = models.User.query.filter_by(id=current_user.id).first()
+    addr = "%s, %s %s" % (user.addr.city, user.addr.state, user.addr.zip)
+    geoloc = Nominatim()
+    loc = geoloc.geocode(addr)
+    key = "f6222ba72b3b9a417a604a355d598f66"
+    forecast = forecastio.load_forecast(key,loc.latitude,loc.longitude,stp)
+    return forecast.hourly()
+
+
+def get_thresholds(user_idd, hr):
+    acc = models.Acceleration.query.filter_by(id=user_idd).first().g
+
+    dictionary = {}
+    for h in hr.data:
+        if "rain" in h.icon:
+            dictionary[h.time.hour]=acc - (acc*decimal.Decimal(.3))
+        elif "snow" in h.icon or "sleet" in h.icon:
+            dictionary[h.time.hour]= acc - (acc*decimal.Decimal(.5))
+        elif "fog" in h.icon:
+            dictionary[h.time.hour]= acc - (acc*decimal.Decimal(.6))
+        elif "hail" in h.icon or "thunder" in h.icon or "tornado" in h.icon:
+            dictionary[h.time.hour] = acc - (acc*decimal.Decimal(.8))
+        else:
+            dictionary[h.time.hour] = acc
+    return dictionary
+
+
+def get_differences(user_idd, dicti, data, tm):
+    usr = models.User.query.filter_by(id=2).first()
+    ts = []
+
+    new = []
+    for d in data:
+        ts.append(str(d.timestamp))
+        if abs(d.x_accelorometer) > abs(dicti[d.timestamp.hour]):
+            new.append(round(abs(abs(d.x_accelorometer)-abs(dicti[d.timestamp.hour])),6))
+        else:
+            new.append(0.0)
+
+    xaccel_string = [float(i) for i in new]
+    points = list(zip(ts, xaccel_string))
+    return points
