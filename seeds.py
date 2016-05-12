@@ -1,28 +1,16 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
-import contextlib
+from sqlalchemy import MetaData, Table
 from app.models import *
 from decimal import Decimal
 from datetime import *
 import logging
 import random
 import os
+from pykml import parser
 
 
-app = Flask(__name__)
-try:
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-except KeyError:
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgresl@localhost/drivertag'
-db = SQLAlchemy(app)
 
-''' Clean out data '''
-meta = MetaData()
-
-db.reflect()
-db.drop_all()
-db.create_all()
 '''Constants for sensor data '''
 
 '''Polling Rate in seconds'''
@@ -39,6 +27,24 @@ MINHIGHRISKMINUTES = 10
 MAXHIGHRISKMINUTES = 60
 
 
+"""
+Parse a well formatted path for map display, assign to a specific user (3)
+"""
+
+def parse_map_user(user):
+
+    kml = os.path.join(os.getcwd(), 'data.kml')
+    with open(kml) as f:
+        doc = parser.fromstring(f.read())
+        coords = doc.Document.Folder.Placemark.LineString.coordinates[0].text.strip().split()
+        points = [(x.split(',')[0], x.split(',')[1]) for x in coords]
+
+    for p in points:
+        d = Data(0, 0, 0, p[1], p[0], datetime.now(), user)
+        db.session.add(d)
+
+
+    db.session.commit()
 
 '''
     This function shall find a new datapoint that satisfies the following requirements
@@ -126,8 +132,8 @@ def EndAccelEvent(time, currentUser, latitude, longitude):
 '''
 def GenerateGPSPoint(latitude, longitude):
 
-    latitude = round((Decimal(latitude) + Decimal(random.uniform(-.005, .005))), 6)
-    longitude = round((Decimal(longitude) + Decimal(random.uniform(-.005, .005))), 6)
+    latitude = round((Decimal(latitude) + Decimal(random.uniform(-.05, .05))), 6)
+    longitude = round((Decimal(longitude) + Decimal(random.uniform(-.05, .05))), 6)
 
     return latitude, longitude
 
@@ -264,27 +270,42 @@ def GenerateData():
 
     return
 
+if __name__ == '__main__':
+    app = Flask(__name__)
+    try:
+        app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+    except KeyError:
+        app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgresl@localhost/drivertag'
+    db.session.close_all()
+    db = SQLAlchemy(app)
+    db.reflect()
+    db.drop_all()
+    db.create_all()
 
-'''Create fake users'''
-user1 = User('1@test.com', 'Tim Smith')
-user2 = User('2@test.com', 'Matt Smith')
-user3 = User('3@test.com', 'Bob Smith')
-addr = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "1")
-addr2 = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "2")
-addr3 = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "3")
-user1.addr = addr
-user2.addr = addr2
-user3.addr = addr3
-userArray = [user1, user2, user3]
+    '''Create fake users'''
+    user1 = User('1@test.com', 'Tim Smith')
+    user2 = User('2@test.com', 'Matt Smith')
+    user3 = User('3@test.com', 'Bob Smith')
+    addr = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "1")
+    addr2 = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "2")
+    addr3 = Address("315C Perkins Road", "Rochester", "NY", "14623", "2", "3")
+    user1.addr = addr
+    user2.addr = addr2
+    user3.addr = addr3
 
-db.session.add_all(userArray)
-db.session.commit()
+    user_array = [user1, user2, user3]
+    userArray = [user1, user2]
+    db.session.add_all(user_array)
+    db.session.commit()
+    parse_map_user(user3)
 
-seedingStartTime = datetime.now()
-GenerateData()
-seedingEndTime = datetime.now()
+    seedingStartTime = datetime.now()
+    GenerateData()
+    seedingEndTime = datetime.now()
 
-print("\n\n Seeding Completed, it took ", (seedingEndTime-seedingStartTime).total_seconds())
+    db.session.close_all()
+
+    print("\n\n Seeding Completed, it took ", (seedingEndTime-seedingStartTime).total_seconds())
 
 
 

@@ -36,23 +36,12 @@
                         fillColor: '#0000FF',
                         strokeOpacity: '0.0'
                     });
-                    start = new google.maps.Marker({
-                        map: map,
-                        position: coords[0],
-                        title: 'Start of Route'
-                    });
-
-                    end = new google.maps.Marker({
-                        map:map,
-                        position: coords[-1],
-                        title: 'End of Route'
-                    })
 
                     path = new google.maps.Polyline({
                         path: coords,
                         geodesic: true,
                         strokeColor: "#FF0000",
-                        strokeWeight: 2,
+                        strokeWeight: 4,
                         strokeOpacity: 1.0
 
                     });

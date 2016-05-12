@@ -23,8 +23,10 @@ geopy==1.11.0
 gunicorn==19.4.5
 itsdangerous==0.24
 kombu==3.0.33
+lxml==3.6.0
 oauthlib==1.0.3
 psycopg2==2.6.1
+pykml==0.1.0
 python-forecastio==1.3.4
 pytz==2015.7
 redis==2.10.5

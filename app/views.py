@@ -163,13 +163,13 @@ Getting Information for High Risk Times
 """
 
 
-@app.route('/hrreport/<id_user>')
+@app.route('/hrreport/')
 @login_required
-def high_risk_report(id_user):
-    user = models.User.query.filter_by(id=id_user).first()
-    times = db.session.query(models.HighRiskTime).filter_by(user_id=id_user).all()
+def high_risk_report():
+    user = current_user
+    times = db.session.query(models.HighRiskTime).filter_by(user_id=current_user.id).all()
     user_info = list()
-    if id_user and user:
+    if user:
         dataList = user.data.all()
         for data in dataList:
             data.x_accelorometer = round(data.x_accelorometer,6)
@@ -179,6 +179,7 @@ def high_risk_report(id_user):
                 if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
                     user_info.append(data)
         return render_template('dailyreports_hr.html', datas=user_info)
+    return redirect(url_for('index'))
 
 """
 High Risk Time deletion
@@ -189,6 +190,8 @@ High Risk Time deletion
 @login_required
 def delete_hrt(hrt_id):
     hrt = models.HighRiskTime.query.filter_by(id=hrt_id).one_or_none()
+    if current_user.id is not hrt.user_id:
+        return redirect(url_for('user_config'))
     if hrt:
         db.session.delete(hrt)
         db.session.commit()
@@ -196,13 +199,14 @@ def delete_hrt(hrt_id):
     return redirect(url_for('user_config'))
 
 
-@app.route('/daily_report/<user_id>')
+@app.route('/daily_report/')
 @login_required
-def daily_report(user_id):
+def daily_report():
 
     fake_user = models.User.query.filter_by(id=2).first()
     obj = fake_user.data.first().timestamp
     weather_data = get_weather_data(obj)
+    user_id = current_user.id
 
     x_accel = []
     y_accel = []
@@ -305,15 +309,15 @@ Map page view
 """
 
 
-@app.route('/map/<user_id>')
+@app.route('/map/')
 @login_required
-def map_page(user_id):
+def map_page():
     key = "AIzaSyBp_559TLwKdvOGuvtaryHmolJnbBpOuk0" # google api key
     user = models.User.query.filter_by(id=current_user.id).first()
     if user.addr:
         address = "%s %s %s %s" % (user.addr.street, user.addr.city, user.addr.state, user.addr.zip)
         url = "https://maps.googleapis.com/maps/api/geocode/json?address=%s&components=country:US&key=%s" % (address, key)
-        data = models.Data.query.filter_by(user_id=user_id).all()
+        data = models.Data.query.filter_by(user_id=3).all()
         response = json.loads(requests.get(url).content)
         addlat = response['results'][0]['geometry']['location']['lat']
         addlng = response['results'][0]['geometry']['location']['lng']
