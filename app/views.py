@@ -218,7 +218,7 @@ def daily_report():
 
     if user_id and fake_user:
         dataList = fake_user.data.from_self().\
-            filter(models.Data.timestamp < (obj+timedelta(days=1))).limit(2000).all()
+            filter(models.Data.timestamp < (obj+timedelta(days=1))).limit(1000).all()
 
         counter = 1
         avg_xaccelorometer = 0
