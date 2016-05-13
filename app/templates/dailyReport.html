@@ -1,7 +1,8 @@
 {% extends "layout.html" %}
 
 {%  block body %}
-    <h1 align="center">Your Report for {{ datas[0].timestamp.strftime("%A, %d %B %Y ") }}</h1>
+
+    <h1 style="text-align:center;padding-right:0px;">Your Report for {{ datas[0].timestamp.strftime("%A, %d %B %Y ") }}</h1>
 
     <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
     <script src="http://code.highcharts.com/highcharts.js"></script>
@@ -84,20 +85,17 @@
         });
 
     </script>
-        <div id="container" style="height:800px; position:relative;">
-            <div id="chart" style="height:380px; padding-bottom:20px"></div>
-            <div id="chart1" style="height:380px;"></div>
+        <div id="container" style="width:100%; position:relative;">
+            <div id="chart" style="width:100%;height:75%; padding-bottom:20px"></div>
+            <div id="chart1" style="width:100%;height:75%;"></div>
         </div>
-		{% if maxx %}
-			<p>Your set acceleration is {{ maxx }} g's</p>
-		{% endif %}
-
 
         {% if datas %}
+            <div style="text-align:center;align-content:center;">
             <input type="button" data-name="hide" value="Show All Numeric Data" id="toggle"
-            style="margin-bottom:10px;width:20%;">
-            <div id="collapse" style="display:none; padding-bottom:10px;">
-                <table id="table" border="1" style="width:50%;">
+            style=margin-bottom:10px;width:20%;">
+            <div id="collapse" style="display:none; padding-bottom:10px;align-content:center;">
+                <table id="table" border="1" style="width:50%;margin:0 auto;">
 
                     <!-- table headers -->
                     <tr class="header">
@@ -119,6 +117,7 @@
                     {% endif %}
 
                 </table>
+            </div>
             </div>
 
         {% else %}

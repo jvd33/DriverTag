@@ -4,7 +4,7 @@
 
 $( document ).ready(function() {
     $( "#tabs" ).tabs();
-    $('#tabs').css('width','500px');
+    $('#tabs').css('width','100%');
     $("#start_time").datetimepicker({
         datepicker: false,
         format: 'H:i'

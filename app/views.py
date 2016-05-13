@@ -113,7 +113,8 @@ def logout():
 @app.route('/home')
 @login_required
 def home():
-    return render_template('home.html')
+    now = datetime.now()
+    return render_template('home.html', now=datetime.strftime(now, "%A %B %d, %Y"))
 
 
 @app.route('/config', methods=['GET', 'POST'])

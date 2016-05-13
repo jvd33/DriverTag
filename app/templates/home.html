@@ -4,16 +4,19 @@
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             {% for message in messages %}
-                {{ message }}
+                <p style="color:green;text-align:center;padding-right:110px">{{ message }}</p>
             {% endfor %}
         {% endif %}
     {% endwith %}
 
-    <h3>Hello {{ session.name }}</h3>
+    <h2 style="text-align:center;padding-right:110px;">Hello, {{ session.name }}.</h2>
+    <h3 style="text-align:center;padding-right:110px;">Daily Report for {{ now }} available!</h3>
+    <div style="text-align:center;padding-right:110px;">
 
-    <a href="/logout">Logout</a>
-    <a href="/config">Configuration</a>
+    <a href="/logout">Logout </a> |
+    <a href="/config">Configuration </a> |
     <a href="/daily_report">Daily Report</a>
+    </div>
 {% endblock %}
 </head>
 

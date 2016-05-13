@@ -1,6 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
-<p class="head14">Add or modify user settings.</p>
+<h1 style="text-align:center;">Add or modify user settings.</h1>
     {% with messages = get_flashed_messages() %}
         {% if messages %}
             <div id="popup" title="Message">
@@ -13,7 +13,7 @@
             <script>$( "#popup" ).dialog();</script>
         {% endif %}
     {% endwith %}
-<table>
+<table style="margin:0 auto">
     <tr>
         <td valign="top" style="height:320px">
             <div id="tabs">
@@ -94,4 +94,3 @@
     </tr>
 </table>
 {% endblock %}
-

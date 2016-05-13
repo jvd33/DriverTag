@@ -42,6 +42,7 @@
 
 HTML {
   height: 100%;
+  overflow-y: scroll;
 }
 
 BODY {
@@ -130,6 +131,7 @@ A {
   padding-bottom: 50px;
   height: 100%;
   width: 100%;
+  overflow-x:hidden;
 }
 
 #footer {
