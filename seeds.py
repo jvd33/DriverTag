@@ -270,6 +270,14 @@ def GenerateData():
 
     return
 
+
+
+def hrt_user(user):
+    for d in Data.query.filter_by(user_id=user.id).limit(400):
+        d.timestamp = d.timestamp + timedelta(hours=1)
+
+    db.session.commit()
+
 if __name__ == '__main__':
     app = Flask(__name__)
     try:
@@ -298,9 +306,9 @@ if __name__ == '__main__':
     db.session.add_all(user_array)
     db.session.commit()
     parse_map_user(user3)
-
     seedingStartTime = datetime.now()
     GenerateData()
+    hrt_user(user1)
     seedingEndTime = datetime.now()
 
     db.session.close_all()

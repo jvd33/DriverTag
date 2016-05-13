@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import forecastio
 from geopy.geocoders import Nominatim
 import decimal
-from sqlalchemy import asc
+from sqlalchemy import extract
 import requests
 
 
@@ -167,20 +167,84 @@ Getting Information for High Risk Times
 @app.route('/hrreport/')
 @login_required
 def high_risk_report():
-    user = current_user
-    times = db.session.query(models.HighRiskTime).filter_by(user_id=current_user.id).all()
-    user_info = list()
-    if user:
-        dataList = user.data.all()
-        for data in dataList:
-            data.x_accelorometer = round(data.x_accelorometer,6)
-            data.y_accelorometer = round(data.y_accelorometer,6)
-            data.z_accelorometer = round(data.z_accelorometer,6)
-            for t in times:
-                if data.timestamp>=t.start_time and data.timestamp<=t.end_time:
-                    user_info.append(data)
-        return render_template('dailyreports_hr.html', datas=user_info)
-    return redirect(url_for('index'))
+
+    fake_user = models.User.query.filter_by(id=1).first()
+    obj = fake_user.data.first().timestamp
+    weather_data = get_weather_data(obj)
+    user_id = current_user.id
+    curr = models.User.query.filter_by(id=user_id).first()
+
+    x_accel = []
+    x_points = y_points = z_points = []
+    y_accel = []
+    z_accel = []
+    timestamps = []
+    ll = []
+    temp = []
+    hrts = {}
+    ts = datetime(1900,12,22,11,30,59)
+
+    if user_id and fake_user:
+        for risk in models.HighRiskTime.query.filter_by(user_id=curr.id).all():
+            d = fake_user.data.from_self().\
+                filter(models.Data.timestamp < (obj+timedelta(days=1))).\
+                filter(extract('hour', models.Data.timestamp) >= risk.start_time.hour).\
+                filter(extract('hour', models.Data.timestamp) <= risk.end_time.hour).\
+                limit(1000).all()
+            if d:
+                hrts[risk] = d
+                temp.extend(d)
+
+        counter = 1
+        avg_xaccelorometer = 0
+        avg_yaccelorometer = 0
+        avg_zaccelorometer = 0
+
+        #format the acceleration down to 6 decimal places
+        for key, x in hrts.items():
+            for data in x:
+                avg_xaccelorometer += data.x_accelorometer
+                avg_yaccelorometer += data.y_accelorometer
+                avg_zaccelorometer += data.y_accelorometer
+
+                #we will get the average of 25 points of data
+                if counter % 10 == 0:
+                    avg_xaccelorometer = round(avg_xaccelorometer/10,6)
+                    avg_yaccelorometer = round(avg_yaccelorometer/10,6)
+                    avg_zaccelorometer = round(avg_zaccelorometer/10,6)
+
+                    x_accel.append(avg_xaccelorometer)
+                    y_accel.append(avg_yaccelorometer)
+                    z_accel.append(avg_zaccelorometer)
+
+                    timestamps.append(str(data.timestamp.hour) + ":" + str(data.timestamp.minute) + ":" + str(data.timestamp.second))
+                    if data.timestamp > ts:
+                        ts = data.timestamp
+                        dicti = get_thresholds(user_id, weather_data)
+                        ll = get_differences(user_id, dicti, x, ts-timedelta(hours=24))
+                    timestamps.append(str(data.timestamp))
+
+                    #reset averages for next iteration
+                    avg_xaccelorometer = 0
+                    avg_yaccelorometer = 0
+                    avg_zaccelorometer = 0
+
+                counter += 1
+                data.x_accelorometer = round(data.x_accelorometer,6)
+                data.y_accelorometer = round(data.y_accelorometer,6)
+                data.z_accelorometer = round(data.z_accelorometer,6)
+
+            xaccel_string = [float(i) for i in x_accel]
+            x_points = list(zip(timestamps, xaccel_string)) # data for highcharts must be [ [x, y], [x, y],...]
+            yaccel_string = [float(i) for i in y_accel]
+            y_points = list(zip(timestamps, yaccel_string))
+            zaccel_string = [float(i) for i in z_accel]
+            z_points = list(zip(timestamps, zaccel_string))
+            hrts[key] = [x_points, z_points, ll, timestamps]
+            counter = 0
+
+        return render_template('dailyreports_hr.html', datas=temp, now=datetime.now(), hrts=hrts)
+    return redirect(url_for('home'))
 
 """
 High Risk Time deletion

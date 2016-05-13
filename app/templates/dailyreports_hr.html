@@ -1,36 +1,139 @@
 {% extends "layout.html" %}
+
 {%  block body %}
 
-        {% if datas %}
-            <p>Your Data for {{ datas[0].timestamp.strftime("%A, %d. %B %Y ") }}</p>
+    <h1 style="text-align:center;padding-right:0px;">High Risk Time Report for {{ now.strftime("%A, %d %B %Y ") }}</h1>
 
-            <table border="1">
+    <script src="https://code.jquery.com/jquery-2.2.1.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='javascript/dailyReport.js') }}"></script>
+    {% for hrt, data in hrts.items() %}
+        <h2 style="text-align:center;">Data for High Risk Interval {{hrt.start_time.hour }}:00 - {{hrt.end_time.hour}}:00 hours</h2>
 
-            <!-- table headers -->
-            <tr>
-                <th>Timestamp</th>
-                <th>X-Accel</th>
-                <th>Y-Accel</th>
-                <th>Z-Accel</th>
-            </tr>
+        <script type="text/javascript">
 
+                $(function () {
+                    $('#chart').highcharts({
+                        chart: {
+                            type: 'line',
+                            zoomType: 'x',
+                        },
+                        title: {
+                            text: 'High Risk Time Data'
+                        },
+                        xAxis: {
+                            categories: {{ data[3]|tojson|safe }}
+                        },
+                        yAxis: {
+                            allowDecimals: true,
+                            title: {
+                                text: 'Average Acceleration (g\'s)'
+                            }
+                        },
+                        plotOptions: {
+                            series: {
+                                turboThreshold: 5000
+                            }
+                        },
+                        series: [{
+                            name: 'X acceleration',
+                            data: {{ data[0]|tojson|safe }}
+                        }, {
+                            name: 'Z acceleration',
+                            data: {{ data[1]|tojson|safe }}
+                        }]
+                    });
+                });
+
+
+                $(function(){
+                    $('#chart1').highcharts({
+                    chart: {
+                        type: 'line',
+                        zoomType: 'x',
+                        renderTo: 'c2'
+                    },
+                    title: {
+                        text: 'Risky Driving Events'
+                    },
+                    xAxis: {
+                        categories: {{ data[3]|tojson|safe }}
+                    },
+                    yAxis: {
+                        allowDecimals: true,
+                        title: {
+                            text: 'Acceleration away from threshold (g\'s)'
+                        },
+                        plotBands: [{
+                            from: 0.0,
+                            to: 0.33,
+                            color: '#ffffe6',
+                        }, {
+                            from: 0.33,
+                            to: 0.66,
+                            color: '#ffe0cc',
+                        }, {
+                            from: 0.66,
+                            to: 1.0,
+                            color: '#ffcccc',
+                        }]
+                    },
+                    plotOptions: {
+                        series: {
+                            turboThreshold: 0
+                        }
+                    },
+                    series: [{
+                        name: 'Delta X Acceleration (g\'s)',
+                        data: {{ data[2]|tojson|safe }}
+                    }]
+                });
+
+            });
+
+
+        </script>
+
+    {% endfor %}
+
+            <div id="container" style="width:100%; position:relative;">
+            <div id="chart" style="width:100%;height:75%; padding-bottom:20px"></div>
+            <div id="chart1" style="width:100%;height:75%;"></div>
+            </div>
             {% if datas %}
-                {% for data in datas %}
-                    <tr>
-                        <td>{{ data.timestamp }}</td>
-                        <td>{{ data.x_accelorometer }}</td>
-                        <td>{{ data.y_accelorometer }}</td>
-                        <td>{{ data.z_accelorometer }}</td>
-                    </tr>
-                {% endfor %}
-            {% endif %}
+                <div style="text-align:center;align-content:center;">
+                <input type="button" data-name="hide" value="Show All Numeric Data" id="toggle"
+                style=margin-bottom:10px;width:20%;">
+                <div id="collapse" style="display:none; padding-bottom:10px;align-content:center;">
+                    <table id="table" border="1" style="width:50%;margin:0 auto;">
 
-            </table>
+                        <!-- table headers -->
+                        <tr class="header">
+                            <th align="center">Timestamp</th>
+                            <th align="center">X-Accel</th>
+                            <th align="center">Y-Accel</th>
+                            <th align="center">Z-Accel</th>
+                        </tr>
+
+
+
+                            {% for data in datas %}
+                                <tr class="row">
+                                    <td align="center">{{ data.timestamp }}</td>
+                                    <td align="center">{{ data.x_accelorometer }}</td>
+                                    <td align="center">{{ data.y_accelorometer }}</td>
+                                    <td align="center">{{ data.z_accelorometer }}</td>
+                                </tr>
+                            {% endfor %}
+
+
+                    </table>
+                </div>
+                </div>
 
         {% else %}
 
-            <p>You have no Data</p>
+            <p style="text-align:center">No risky driving behavior today!</p>
 
         {% endif %}
 {% endblock %}
-
